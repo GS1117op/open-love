@@ -9,17 +9,49 @@ import { Input } from "@/components/ui/input";
 
 export function PostForm() {
   const [nickname, setNickname] = useState("");
-  const [category, setCategory] = useState("恋愛");
-  const [ageRange, setAgeRange] = useState("20代");
-  const [gender, setGender] = useState("女性");
-  const [status, setStatus] = useState("独身");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [email, setEmail] = useState("");
-  const [consent, setConsent] = useState(false);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
+const [category, setCategory] = useState("恋愛");
+const [ageRange, setAgeRange] = useState("20代");
+const [gender, setGender] = useState("女性");
+const [status, setStatus] = useState("独身");
+
+const [experienceCount, setExperienceCount] = useState("");
+const [firstExperienceAge, setFirstExperienceAge] = useState("");
+const [sexFrequency, setSexFrequency] = useState("");
+const [maxSexFrequency, setMaxSexFrequency] = useState("");
+
+const [cheatingExperience, setCheatingExperience] = useState("");
+const [cheatedExperience, setCheatedExperience] = useState("");
+
+const [marriageAge, setMarriageAge] = useState("");
+const [relationshipDuration, setRelationshipDuration] = useState("");
+const [childrenCount, setChildrenCount] = useState("");
+const [wantChildren, setWantChildren] = useState("");
+const [divorceExperience, setDivorceExperience] = useState("");
+
+const [marriageIntention, setMarriageIntention] = useState("");
+const [wantHousewife, setWantHousewife] = useState("");
+const [wantDualIncome, setWantDualIncome] = useState("");
+
+const [height, setHeight] = useState("");
+const [weight, setWeight] = useState("");
+const [cupSize, setCupSize] = useState("");
+
+const [education, setEducation] = useState("");
+const [incomeRange, setIncomeRange] = useState("");
+const [occupation, setOccupation] = useState("");
+
+const [cohabitationExperience, setCohabitationExperience] = useState("");
+const [datingAppExperience, setDatingAppExperience] = useState("");
+const [meetingMethod, setMeetingMethod] = useState("");
+
+const [title, setTitle] = useState("");
+const [content, setContent] = useState("");
+
+const [email, setEmail] = useState("");
+const [consent, setConsent] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [message, setMessage] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,14 +80,70 @@ export function PostForm() {
     setMessage("");
 
     const { error: postError } = await supabase.from("posts").insert({
-      nickname: nickname.trim() || null,
-      category,
-      age_range: ageRange,
-      gender,
-      status,
-      title: title.trim(),
-      content: content.trim(),
-    });
+  nickname: nickname.trim() || null,
+  category,
+  age_range: ageRange,
+  gender,
+  status,
+  title: title.trim(),
+  content: content.trim(),
+
+  experience_count: experienceCount ? Number(experienceCount) : null,
+  first_experience_age: firstExperienceAge ? Number(firstExperienceAge) : null,
+  sex_frequency: sexFrequency ? Number(sexFrequency) : null,
+  max_sex_frequency: maxSexFrequency ? Number(maxSexFrequency) : null,
+
+  cheating_experience:
+    cheatingExperience === ""
+      ? null
+      : cheatingExperience === "true",
+  cheated_experience:
+    cheatedExperience === ""
+      ? null
+      : cheatedExperience === "true",
+
+  marriage_age: marriageAge ? Number(marriageAge) : null,
+  relationship_duration: relationshipDuration
+    ? Number(relationshipDuration)
+    : null,
+  children_count: childrenCount ? Number(childrenCount) : null,
+  want_children:
+    wantChildren === ""
+      ? null
+      : wantChildren === "true",
+  divorce_experience:
+    divorceExperience === ""
+      ? null
+      : divorceExperience === "true",
+
+  marriage_intention: marriageIntention || null,
+  want_housewife:
+    wantHousewife === ""
+      ? null
+      : wantHousewife === "true",
+  want_dual_income:
+    wantDualIncome === ""
+      ? null
+      : wantDualIncome === "true",
+
+  height: height ? Number(height) : null,
+  weight: weight ? Number(weight) : null,
+  cup_size: cupSize || null,
+
+  education: education || null,
+  income_range: incomeRange || null,
+  occupation: occupation || null,
+
+  cohabitation_experience:
+    cohabitationExperience === ""
+      ? null
+      : cohabitationExperience === "true",
+  dating_app_experience:
+    datingAppExperience === ""
+      ? null
+      : datingAppExperience === "true",
+  meeting_method: meetingMethod || null,
+});
 
     if (postError) {
       setMessage(`保存に失敗しました: ${postError.message}`);
@@ -63,16 +151,14 @@ export function PostForm() {
       return;
     }
 
-    const { error: subscriberError } = await supabase.from("subscribers").insert({
+const { error: subscriberError } = await supabase.from("subscribers").insert({
   email: email.trim(),
   consent: true,
   source: "post_form",
 });
 
 if (subscriberError) {
-  if (subscriberError.code === "23505") {
-    // すでに登録済みのメールなら成功扱い
-  } else {
+  if (subscriberError.code !== "23505") {
     setMessage(`メール登録に失敗しました: ${subscriberError.message}`);
     setIsSubmitting(false);
     return;
@@ -86,16 +172,51 @@ if (subscriberError) {
     }
 
     setMessage("投稿を保存しました。");
-    setNickname("");
-    setTitle("");
-    setContent("");
-    setEmail("");
-    setConsent(false);
-    setCategory("恋愛");
-    setAgeRange("20代");
-    setGender("女性");
-    setStatus("独身");
-    setIsSubmitting(false);
+
+setNickname("");
+
+setCategory("恋愛");
+setAgeRange("20代");
+setGender("女性");
+setStatus("独身");
+
+setExperienceCount("");
+setFirstExperienceAge("");
+setSexFrequency("");
+setMaxSexFrequency("");
+
+setCheatingExperience("");
+setCheatedExperience("");
+
+setMarriageAge("");
+setRelationshipDuration("");
+setChildrenCount("");
+setWantChildren("");
+setDivorceExperience("");
+
+setMarriageIntention("");
+setWantHousewife("");
+setWantDualIncome("");
+
+setHeight("");
+setWeight("");
+setCupSize("");
+
+setEducation("");
+setIncomeRange("");
+setOccupation("");
+
+setCohabitationExperience("");
+setDatingAppExperience("");
+setMeetingMethod("");
+
+setTitle("");
+setContent("");
+
+setEmail("");
+setConsent(false);
+
+setIsSubmitting(false);
   }
 
   return (
@@ -136,6 +257,135 @@ if (subscriberError) {
               <option>家族</option>
             </select>
           </div>
+          {/* ===== 追加データ（詳細） ===== */}
+
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+  <Input type="number" placeholder="経験人数" value={experienceCount} onChange={(e)=>setExperienceCount(e.target.value)} />
+  <Input type="number" placeholder="初体験年齢" value={firstExperienceAge} onChange={(e)=>setFirstExperienceAge(e.target.value)} />
+  <Input type="number" placeholder="週の頻度" value={sexFrequency} onChange={(e)=>setSexFrequency(e.target.value)} />
+  <Input type="number" placeholder="過去最高頻度" value={maxSexFrequency} onChange={(e)=>setMaxSexFrequency(e.target.value)} />
+
+  <Input type="number" placeholder="結婚年齢" value={marriageAge} onChange={(e)=>setMarriageAge(e.target.value)} />
+  <Input type="number" placeholder="交際期間（月）" value={relationshipDuration} onChange={(e)=>setRelationshipDuration(e.target.value)} />
+  <Input type="number" placeholder="子供の人数" value={childrenCount} onChange={(e)=>setChildrenCount(e.target.value)} />
+
+  <Input type="number" placeholder="身長(cm)" value={height} onChange={(e)=>setHeight(e.target.value)} />
+  <Input type="number" placeholder="体重(kg)" value={weight} onChange={(e)=>setWeight(e.target.value)} />
+
+  <Input placeholder="カップ数" value={cupSize} onChange={(e)=>setCupSize(e.target.value)} />
+  <Input placeholder="学歴" value={education} onChange={(e)=>setEducation(e.target.value)} />
+  <Input placeholder="年収帯" value={incomeRange} onChange={(e)=>setIncomeRange(e.target.value)} />
+  <Input placeholder="職業" value={occupation} onChange={(e)=>setOccupation(e.target.value)} />
+  <Input placeholder="出会いのきっかけ" value={meetingMethod} onChange={(e)=>setMeetingMethod(e.target.value)} />
+
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">浮気経験</label>
+  <select value={cheatingExperience} onChange={(e)=>setCheatingExperience(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">あり</option>
+    <option value="false">なし</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">浮気された経験</label>
+  <select value={cheatedExperience} onChange={(e)=>setCheatedExperience(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">あり</option>
+    <option value="false">なし</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">子供欲しいか</label>
+  <select value={wantChildren} onChange={(e)=>setWantChildren(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">欲しい</option>
+    <option value="false">欲しくない</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">離婚経験</label>
+  <select value={divorceExperience} onChange={(e)=>setDivorceExperience(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">あり</option>
+    <option value="false">なし</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">結婚願望</label>
+  <Input value={marriageIntention} onChange={(e)=>setMarriageIntention(e.target.value)} placeholder="例：強い / 普通 / なし" />
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">専業主婦希望</label>
+  <select value={wantHousewife} onChange={(e)=>setWantHousewife(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">希望する</option>
+    <option value="false">希望しない</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">共働き希望</label>
+  <select value={wantDualIncome} onChange={(e)=>setWantDualIncome(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">希望する</option>
+    <option value="false">希望しない</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">同棲経験</label>
+  <select value={cohabitationExperience} onChange={(e)=>setCohabitationExperience(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">あり</option>
+    <option value="false">なし</option>
+  </select>
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">マッチングアプリ経験</label>
+  <select value={datingAppExperience} onChange={(e)=>setDatingAppExperience(e.target.value)}>
+    <option value="">未選択</option>
+    <option value="true">あり</option>
+    <option value="false">なし</option>
+  </select>
+</div>
+          <div className="space-y-2">
+  <label className="text-sm font-medium">経験人数</label>
+  <Input
+    type="number"
+    value={experienceCount}
+    onChange={(e) => setExperienceCount(e.target.value)}
+    placeholder="例：5"
+  />
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">週の頻度</label>
+  <Input
+    type="number"
+    value={sexFrequency}
+    onChange={(e) => setSexFrequency(e.target.value)}
+    placeholder="例：2"
+  />
+</div>
+
+<div className="space-y-2">
+  <label className="text-sm font-medium">子供の人数</label>
+  <Input
+    type="number"
+    value={childrenCount}
+    onChange={(e) => setChildrenCount(e.target.value)}
+    placeholder="例：1"
+  />
+</div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium">年代</label>
