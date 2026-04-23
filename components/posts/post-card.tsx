@@ -9,6 +9,12 @@ type PostCardProps = {
   title: string;
   content: string;
   createdAt?: string;
+
+  experienceCount?: number | null;
+  sexFrequency?: number | null;
+  childrenCount?: number | null;
+  education?: string | null;
+  incomeRange?: string | null;
 };
 
 export function PostCard({
@@ -20,6 +26,11 @@ export function PostCard({
   title,
   content,
   createdAt,
+  experienceCount,
+  sexFrequency,
+  childrenCount,
+  education,
+  incomeRange,
 }: PostCardProps) {
   const formattedDate = createdAt
     ? new Date(createdAt).toLocaleString("ja-JP", {
@@ -32,6 +43,38 @@ export function PostCard({
     : null;
 
   const displayName = nickname?.trim() ? nickname : "匿名ユーザー";
+
+  const detailItems = [
+    {
+      label: "経験人数",
+      value:
+        experienceCount !== null && experienceCount !== undefined
+          ? `${experienceCount}人`
+          : null,
+    },
+    {
+      label: "週の頻度",
+      value:
+        sexFrequency !== null && sexFrequency !== undefined
+          ? `${sexFrequency}回`
+          : null,
+    },
+    {
+      label: "子供の人数",
+      value:
+        childrenCount !== null && childrenCount !== undefined
+          ? `${childrenCount}人`
+          : null,
+    },
+    {
+      label: "学歴",
+      value: education?.trim() ? education : null,
+    },
+    {
+      label: "年収帯",
+      value: incomeRange?.trim() ? incomeRange : null,
+    },
+  ].filter((item) => item.value);
 
   return (
     <Card className="border-slate-200 bg-white">
@@ -52,7 +95,18 @@ export function PostCard({
 
         <h2 className="mt-4 text-lg font-semibold tracking-tight">{title}</h2>
 
-        <p className="mt-3 text-sm leading-7 text-slate-600">{content}</p>
+        {detailItems.length > 0 ? (
+          <div className="mt-4 grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-4 sm:grid-cols-3">
+            {detailItems.map((item) => (
+              <div key={item.label} className="space-y-1">
+                <p className="text-xs text-slate-500">{item.label}</p>
+                <p className="text-sm font-medium text-slate-800">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <p className="mt-4 text-sm leading-7 text-slate-600">{content}</p>
       </CardContent>
     </Card>
   );

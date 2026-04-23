@@ -4,6 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { PostCard } from "@/components/posts/post-card";
 import { PostFilter } from "@/components/posts/post-filter";
+import { PostStats } from "@/components/posts/post-stats";
+import { PostAgeChart } from "@/components/posts/post-age-chart";
+import { PostStatusChart } from "@/components/posts/post-status-chart";
 
 type Post = {
   id: number;
@@ -15,6 +18,12 @@ type Post = {
   title: string;
   content: string;
   created_at: string;
+
+  experience_count: number | null;
+  sex_frequency: number | null;
+  children_count: number | null;
+  education: string | null;
+  income_range: string | null;
 };
 
 export function PostList() {
@@ -66,6 +75,53 @@ export function PostList() {
     });
   }, [posts, category, ageRange, gender, status]);
 
+  const stats = useMemo(() => {
+    const experienceValues = filteredPosts
+      .map((post) => post.experience_count)
+      .filter((value): value is number => value !== null);
+
+    const sexFrequencyValues = filteredPosts
+      .map((post) => post.sex_frequency)
+      .filter((value): value is number => value !== null);
+
+    const childrenValues = filteredPosts
+      .map((post) => post.children_count)
+      .filter((value): value is number => value !== null);
+
+    function getAverage(values: number[]) {
+      if (values.length === 0) {
+        return null;
+      }
+
+      const total = values.reduce((sum, value) => sum + value, 0);
+      return total / values.length;
+    }
+
+    return {
+      totalCount: filteredPosts.length,
+      averageExperienceCount: getAverage(experienceValues),
+      averageSexFrequency: getAverage(sexFrequencyValues),
+      averageChildrenCount: getAverage(childrenValues),
+    };
+  }, [filteredPosts]);
+
+  const ageChartData = useMemo(() => {
+    const ageOrder = ["10代", "20代", "30代", "40代", "50代以上"];
+
+    return ageOrder.map((age) => ({
+      ageRange: age,
+      count: filteredPosts.filter((post) => post.age_range === age).length,
+    }));
+  }, [filteredPosts]);
+    const statusChartData = useMemo(() => {
+    const statusOrder = ["独身", "交際中", "既婚", "離婚"];
+
+    return statusOrder.map((item) => ({
+      status: item,
+      count: filteredPosts.filter((post) => post.status === item).length,
+    }));
+  }, [filteredPosts]);
+
   return (
     <div className="space-y-6">
       <PostFilter
@@ -78,6 +134,16 @@ export function PostList() {
         onGenderChange={setGender}
         onStatusChange={setStatus}
       />
+
+      <PostStats
+        totalCount={stats.totalCount}
+        averageExperienceCount={stats.averageExperienceCount}
+        averageSexFrequency={stats.averageSexFrequency}
+        averageChildrenCount={stats.averageChildrenCount}
+      />
+
+      <PostAgeChart data={ageChartData} />
+      <PostStatusChart data={statusChartData} />
 
       {loading ? (
         <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
@@ -106,6 +172,11 @@ export function PostList() {
                   title={post.title}
                   content={post.content}
                   createdAt={post.created_at}
+                  experienceCount={post.experience_count}
+                  sexFrequency={post.sex_frequency}
+                  childrenCount={post.children_count}
+                  education={post.education}
+                  incomeRange={post.income_range}
                 />
               ))
             ) : (
