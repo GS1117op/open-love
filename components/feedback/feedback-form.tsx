@@ -20,31 +20,32 @@ export function FeedbackForm() {
       return;
     }
 
-    if (!supabase) {
-      setMessage("Supabase の設定が見つかりません。");
-      return;
-    }
-
     setIsSubmitting(true);
     setMessage("");
 
-    const { error } = await supabase.from("feedbacks").insert({
-      type,
-      content: content.trim(),
-      contact: contact.trim() || null,
-    });
+    try {
+      const { error } = await supabase.from("feedbacks").insert({
+        type,
+        content: content.trim(),
+        contact: contact.trim() || null,
+      });
 
-    if (error) {
-      setMessage(`送信に失敗しました: ${error.message}`);
+      if (error) {
+        console.error("Supabase insert error", error);
+        setMessage(`送信に失敗しました: ${error.message}`);
+        return;
+      }
+
+      setMessage("送信ありがとうございました。");
+      setType("ご意見");
+      setContent("");
+      setContact("");
+    } catch (err) {
+      console.error("Unexpected submit error", err);
+      setMessage("送信に失敗しました。ブラウザコンソールを確認してください。");
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    setMessage("送信ありがとうございました。");
-    setType("ご意見");
-    setContent("");
-    setContact("");
-    setIsSubmitting(false);
   }
 
   return (

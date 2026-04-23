@@ -8,12 +8,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export function PostForm() {
-  const [category, setCategory] = useState("恋愛");
-  const [ageRange, setAgeRange] = useState("20代");
-  const [gender, setGender] = useState("女性");
-  const [status, setStatus] = useState("独身");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+　const [nickname, setNickname] = useState("");
+　const [category, setCategory] = useState("恋愛");
+　const [ageRange, setAgeRange] = useState("20代");
+　const [gender, setGender] = useState("女性");
+　const [status, setStatus] = useState("独身");
+　const [title, setTitle] = useState("");
+　const [content, setContent] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -29,29 +30,38 @@ export function PostForm() {
     setIsSubmitting(true);
     setMessage("");
 
-    const { error } = await supabase.from("posts").insert({
-      category,
-      age_range: ageRange,
-      gender,
-      status,
-      title: title.trim(),
-      content: content.trim(),
-    });
+    try {
+      const { error } = await supabase.from("posts").insert({
+  nickname: nickname.trim() || null,
+  category,
+  age_range: ageRange,
+  gender,
+  status,
+  title: title.trim(),
+  content: content.trim(),
+});
 
-    if (error) {
-  setMessage(`保存に失敗しました: ${error.message}`);
-  setIsSubmitting(false);
-  return;
-}
+      if (error) {
+        console.error("Supabase insert error", error);
+        setMessage(`保存に失敗しました: ${error.message}`);
+        setIsSubmitting(false);
+        return;
+      }
 
-    setMessage("投稿を保存しました。");
-    setTitle("");
-    setContent("");
-    setCategory("恋愛");
-    setAgeRange("20代");
-    setGender("女性");
-    setStatus("独身");
-    setIsSubmitting(false);
+      setMessage("投稿を保存しました。");
+      setNickname("");
+      setTitle("");
+      setContent("");
+      setCategory("恋愛");
+      setAgeRange("20代");
+      setGender("女性");
+      setStatus("独身");
+    } catch (err) {
+      console.error("Unexpected submit error", err);
+      setMessage("保存に失敗しました。ブラウザコンソールを確認してください。");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -68,6 +78,17 @@ export function PostForm() {
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+    <label className="text-sm font-medium">ニックネーム（任意）</label>
+    <Input
+      value={nickname}
+      onChange={(e) => setNickname(e.target.value)}
+      placeholder="例：さくら、たけし、匿名A"
+    />
+    <p className="text-xs text-slate-500">
+      個人が特定される名前やSNSアカウント名は避けてください。
+    </p>
+  </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">カテゴリ</label>
             <select

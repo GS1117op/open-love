@@ -7,6 +7,7 @@ import { PostFilter } from "@/components/posts/post-filter";
 
 type Post = {
   id: number;
+  nickname: string | null;
   category: string;
   age_range: string;
   gender: string;
@@ -27,6 +28,12 @@ export function PostList() {
 
   useEffect(() => {
     async function fetchPosts() {
+      if (!supabase) {
+        setErrorMessage("Supabase の設定が見つかりません。");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setErrorMessage("");
 
@@ -91,6 +98,7 @@ export function PostList() {
               filteredPosts.map((post) => (
                 <PostCard
                   key={post.id}
+                  nickname={post.nickname}
                   category={post.category}
                   ageRange={post.age_range}
                   gender={post.gender}

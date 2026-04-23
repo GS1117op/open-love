@@ -21,7 +21,7 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-            オープン恋愛は、恋愛・結婚・家族に関する匿名データを投稿し、
+            OpenLOVEは、恋愛・結婚・家族に関する匿名データを投稿し、
             一覧で見たり、あとから集計しやすくするためのサービスです。
           </p>
 
