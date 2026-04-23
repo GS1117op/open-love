@@ -8,13 +8,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export function PostForm() {
-　const [nickname, setNickname] = useState("");
-　const [category, setCategory] = useState("恋愛");
-　const [ageRange, setAgeRange] = useState("20代");
-　const [gender, setGender] = useState("女性");
-　const [status, setStatus] = useState("独身");
-　const [title, setTitle] = useState("");
-　const [content, setContent] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [category, setCategory] = useState("恋愛");
+  const [ageRange, setAgeRange] = useState("20代");
+  const [gender, setGender] = useState("女性");
+  const [status, setStatus] = useState("独身");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -22,46 +24,78 @@ export function PostForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    if (!supabase) {
+      setMessage("Supabase の設定が見つかりません。");
+      return;
+    }
+
     if (!title.trim() || !content.trim()) {
       setMessage("タイトルと内容は必須です。");
+      return;
+    }
+
+    if (!email.trim()) {
+      setMessage("メールアドレスは必須です。");
+      return;
+    }
+
+    if (!consent) {
+      setMessage("同意チェックが必要です。");
       return;
     }
 
     setIsSubmitting(true);
     setMessage("");
 
-    try {
-      const { error } = await supabase.from("posts").insert({
-  nickname: nickname.trim() || null,
-  category,
-  age_range: ageRange,
-  gender,
-  status,
-  title: title.trim(),
-  content: content.trim(),
+    const { error: postError } = await supabase.from("posts").insert({
+      nickname: nickname.trim() || null,
+      category,
+      age_range: ageRange,
+      gender,
+      status,
+      title: title.trim(),
+      content: content.trim(),
+    });
+
+    if (postError) {
+      setMessage(`保存に失敗しました: ${postError.message}`);
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { error: subscriberError } = await supabase.from("subscribers").insert({
+  email: email.trim(),
+  consent: true,
+  source: "post_form",
 });
 
-      if (error) {
-        console.error("Supabase insert error", error);
-        setMessage(`保存に失敗しました: ${error.message}`);
-        setIsSubmitting(false);
-        return;
-      }
+if (subscriberError) {
+  if (subscriberError.code === "23505") {
+    // すでに登録済みのメールなら成功扱い
+  } else {
+    setMessage(`メール登録に失敗しました: ${subscriberError.message}`);
+    setIsSubmitting(false);
+    return;
+  }
+}
 
-      setMessage("投稿を保存しました。");
-      setNickname("");
-      setTitle("");
-      setContent("");
-      setCategory("恋愛");
-      setAgeRange("20代");
-      setGender("女性");
-      setStatus("独身");
-    } catch (err) {
-      console.error("Unexpected submit error", err);
-      setMessage("保存に失敗しました。ブラウザコンソールを確認してください。");
-    } finally {
+    if (subscriberError) {
+      setMessage(`メール登録に失敗しました: ${subscriberError.message}`);
       setIsSubmitting(false);
+      return;
     }
+
+    setMessage("投稿を保存しました。");
+    setNickname("");
+    setTitle("");
+    setContent("");
+    setEmail("");
+    setConsent(false);
+    setCategory("恋愛");
+    setAgeRange("20代");
+    setGender("女性");
+    setStatus("独身");
+    setIsSubmitting(false);
   }
 
   return (
@@ -73,22 +107,23 @@ export function PostForm() {
             恋愛・結婚・家族のデータを投稿する
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-            まずはMVPとして、基本情報を入力して保存できます。
+            基本情報を入力して保存できます。メールアドレスは公開されません。
           </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-    <label className="text-sm font-medium">ニックネーム（任意）</label>
-    <Input
-      value={nickname}
-      onChange={(e) => setNickname(e.target.value)}
-      placeholder="例：さくら、たけし、匿名A"
-    />
-    <p className="text-xs text-slate-500">
-      個人が特定される名前やSNSアカウント名は避けてください。
-    </p>
-  </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">ニックネーム（任意）</label>
+            <Input
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="例：さくら、たけし、匿名A"
+            />
+            <p className="text-xs text-slate-500">
+              個人が特定される名前やSNSアカウント名は避けてください。
+            </p>
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium">カテゴリ</label>
             <select
@@ -164,20 +199,46 @@ export function PostForm() {
             />
           </div>
 
-          
-          {message ? (
-  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-    <p>{message}</p>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">メールアドレス（必須）</label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="example@email.com"
+            />
+            <p className="text-xs text-slate-500">
+              メールアドレスは公開されません。
+            </p>
+          </div>
 
-    {message === "投稿を保存しました。" ? (
-      <div className="mt-3">
-        <Button asChild variant="outline" size="sm">
-          <Link href="/posts">投稿一覧を見る</Link>
-        </Button>
-      </div>
-    ) : null}
-  </div>
-) : null}
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <label className="flex items-start gap-3 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="mt-1"
+              />
+              <span>
+                OpenLoveの更新情報や集計データ、関連するご案内をメールで受け取ることに同意します。
+              </span>
+            </label>
+          </div>
+
+          {message ? (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+              <p>{message}</p>
+
+              {message === "投稿を保存しました。" ? (
+                <div className="mt-3">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href="/posts">投稿一覧を見る</Link>
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
             {isSubmitting ? "保存中..." : "投稿する"}
