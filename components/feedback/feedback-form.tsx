@@ -42,7 +42,7 @@ export function FeedbackForm() {
       setContact("");
     } catch (err) {
       console.error("Unexpected submit error", err);
-      setMessage("送信に失敗しました。ブラウザコンソールを確認してください。");
+      setMessage("送信に失敗しました。ブラウザを更新して、もう一度お試しください。");
     } finally {
       setIsSubmitting(false);
     }
@@ -54,16 +54,16 @@ export function FeedbackForm() {
         <div className="mb-6">
           <p className="text-sm font-medium text-slate-600">ご意見・ご要望</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-            改善のためのご意見を送る
+            改善のための声を送る
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-            匿名で送れます。使いづらい点や追加してほしい機能があれば教えてください。
+            使いづらい点や追加してほしい機能など、気軽に送ってください。
           </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-sm font-medium">種別</label>
+            <label className="text-sm font-medium">種類</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
@@ -81,7 +81,7 @@ export function FeedbackForm() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[160px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
-              placeholder="例：経験人数の集計が見たい、スマホで少し見づらい、など"
+              placeholder="たとえば、見たいグラフ、使いづらい操作、追加してほしい機能など"
             />
           </div>
 

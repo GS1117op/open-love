@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(supabase --version)"
+      "Bash(supabase --version)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/data-graphs/custom)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(npx eslint *)",
+      "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(m['ruleId'], m['message'], m['line']\\) for r in data for m in r['messages']]\")",
+      "Bash(npx vercel *)",
+      "WebFetch(domain:open-love-cw6wuv6g0-adad21work-7728s-projects.vercel.app)",
+      "WebFetch(domain:open-love-qgo92dw63-adad21work-7728s-projects.vercel.app)",
+      "WebFetch(domain:open-love-sepia.vercel.app)"
     ]
   }
 }

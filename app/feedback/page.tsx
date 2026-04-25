@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/layout/site-header";
+﻿import { SiteHeader } from "@/components/layout/site-header";
 import { FeedbackForm } from "@/components/feedback/feedback-form";
 
 export default function FeedbackPage() {
@@ -6,7 +6,7 @@ export default function FeedbackPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:py-16">
+      <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
         <FeedbackForm />
       </main>
     </div>

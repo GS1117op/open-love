@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -230,14 +230,16 @@ const experienceOptions = {
 function FormSection({
   title,
   description,
+  className,
   children,
 }: {
   title: string;
   description?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
+    <section className={`space-y-4 rounded-[1.5rem] border p-4 sm:p-5 ${className ?? "border-slate-200 bg-slate-50/60"}`}>
       <div>
         <h2 className="text-base font-semibold text-slate-900">{title}</h2>
         {description ? (
@@ -266,7 +268,7 @@ function RatingSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+        className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
       >
         <option value="">未選択</option>
         {options.map((option, index) => (
@@ -510,22 +512,23 @@ setCheatedLevel("");
   }
 
   return (
-    <Card className="border-slate-200 bg-white">
-      <CardContent className="p-6 sm:p-8">
+    <Card className="rounded-[2rem] border-slate-200 bg-white shadow-sm">
+      <CardContent className="p-4 sm:p-8">
         <div className="mb-6">
           <p className="text-sm font-medium text-slate-600">匿名投稿フォーム</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-            恋愛・価値観のデータを投稿する
+            恋愛・結婚・セックスのデータを投稿する
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
             基本情報を入力して保存できます。メールアドレスは公開されません。
           </p>
         </div>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <FormSection
             title="基本情報"
             description="まずは公開される基本情報を入力してください。"
+            className="border-sky-100 bg-sky-50/60"
           >
             <div className="space-y-3">
               <div className="flex items-center gap-3">
@@ -778,8 +781,9 @@ setCheatedLevel("");
           </FormSection>
 
           <FormSection
-            title="恋愛・性データ"
+            title="恋愛・セックスデータ"
             description="任意で詳細なデータを入力できます。"
+            className="border-rose-100 bg-rose-50/60"
           >
             <div className="space-y-3">
               <div className="flex items-center gap-3">
@@ -849,7 +853,7 @@ setCheatedLevel("");
 
               <div className="flex items-center gap-3">
                 <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
-                  週のオナニー頻度
+                  1週間のオナニー回数
                 </span>
                 <Input
                   className="flex-1"
@@ -862,7 +866,7 @@ setCheatedLevel("");
 
               <div className="flex items-center gap-3">
                 <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
-                  1回の時間（実態）
+                  セックス1回の時間（実態）
                 </span>
                 <Input
                   className="flex-1"
@@ -875,7 +879,7 @@ setCheatedLevel("");
 
               <div className="flex items-center gap-3">
                 <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
-                  1回の時間（理想）
+                  セックス1回の時間（理想）
                 </span>
                 <Input
                   className="flex-1"
@@ -918,8 +922,9 @@ setCheatedLevel("");
           <FormSection
             title="価値観"
             description="結婚や不貞行為に関する価値観を選択してください。"
+            className="border-amber-100 bg-amber-50/60"
           >
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
                 <h3 className="mb-3 text-sm font-semibold text-slate-800">
                   結婚
@@ -977,8 +982,9 @@ setCheatedLevel("");
           <FormSection
   title="経験"
   description="これまでの経験について選択してください。"
+  className="border-emerald-100 bg-emerald-50/60"
 >
-  <div className="space-y-5">
+  <div className="space-y-6">
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <RatingSelect
         label="同棲経験"
@@ -1043,7 +1049,7 @@ setCheatedLevel("");
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="min-h-[140px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                className="min-h-[160px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
                 placeholder="恋愛、結婚、価値観などについて自由に記述してください"
               />
             </div>
@@ -1068,7 +1074,7 @@ setCheatedLevel("");
               </p>
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <div className="rounded-[1.25rem] border border-slate-200 bg-white p-4">
               <label className="flex items-start gap-3 text-sm text-slate-700">
                 <input
                   type="checkbox"
@@ -1084,7 +1090,7 @@ setCheatedLevel("");
           </FormSection>
 
           {message ? (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
               <p>{message}</p>
 
               {message === "投稿を保存しました。" ? (
@@ -1109,3 +1115,4 @@ setCheatedLevel("");
     </Card>
   );
 }
+
