@@ -4,6 +4,8 @@ import { FeedbackCta } from "@/components/layout/feedback-cta";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://open-love-sepia.vercel.app"),
+
   title: "OpenLove",
   description: "恋愛・結婚・性に関するリアルデータを共有するプラットフォーム",
 
@@ -14,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "OpenLove",
     images: [
       {
-        url: "https://open-love-sepia.vercel.app/og-image.png", // ← publicフォルダに配置
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "OpenLove",
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "OpenLove",
     description: "恋愛・結婚・性に関するリアルデータを共有するプラットフォーム",
-    images: ["https://open-love-sepia.vercel.app/og-image.png"], // 同じ画像でOK
+    images: ["/og-image.png"],
   },
 };
 
