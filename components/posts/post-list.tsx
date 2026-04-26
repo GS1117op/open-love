@@ -123,8 +123,8 @@ export function PostList() {
       q = applyMultiSelect(q, "age", deferredFilters.age);
       q = applyMultiSelect(q, "status", deferredFilters.status);
       q = applyMultiSelect(q, "prefecture", deferredFilters.prefecture);
-      q = applyRange(q, "height", deferredFilters.height);
-      q = applyRange(q, "weight", deferredFilters.weight);
+      q = applyMultiSelect(q, "height", deferredFilters.height);
+      q = applyMultiSelect(q, "weight", deferredFilters.weight);
       q = applyMultiSelect(q, "mbti", deferredFilters.mbti);
       q = applyRange(q, "income", deferredFilters.income);
       q = applyMultiSelect(q, "education", deferredFilters.education);

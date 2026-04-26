@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import {
-  ageBucketOptions,
   mbtiOptions,
   prefectureOptions,
   educationOptions,
@@ -20,8 +19,8 @@ export type PostFilterState = {
   age: string[];
   status: string[];
   prefecture: string[];
-  height: { min: string; max: string };
-  weight: { min: string; max: string };
+  height: string[];
+  weight: string[];
   mbti: string[];
   income: { min: string; max: string };
   education: string[];
@@ -59,8 +58,8 @@ export const defaultPostFilters: PostFilterState = {
   age: [],
   status: [],
   prefecture: [],
-  height: { min: "", max: "" },
-  weight: { min: "", max: "" },
+  height: [],
+  weight: [],
   mbti: [],
   income: { min: "", max: "" },
   education: [],
@@ -122,6 +121,34 @@ const statusOptions = ["独身", "交際中", "既婚", "離婚"];
 function toRatingOptions(labels: readonly string[]) {
   return labels.map((label, i) => ({ label, value: String(i + 1) }));
 }
+
+const exactAgeOptions = [
+  ...Array.from({ length: 45 }, (_, i) => {
+    const value = 15 + i;
+    return { label: `${value}歳`, value: String(value) };
+  }),
+  ...Array.from({ length: 20 }, (_, i) => {
+    const value = 60 + i;
+    return { label: `${value}歳`, value: String(value) };
+  }),
+  { label: "80歳", value: "80" },
+];
+
+const exactHeightOptions = [
+  ...Array.from({ length: 65 }, (_, i) => {
+    const value = 135 + i;
+    return { label: `${value}cm`, value: String(value) };
+  }),
+  { label: "200cm", value: "200" },
+];
+
+const exactWeightOptions = [
+  ...Array.from({ length: 75 }, (_, i) => {
+    const value = 25 + i;
+    return { label: `${value}kg`, value: String(value) };
+  }),
+  { label: "100kg", value: "100" },
+];
 
 // ─── MultiSelectDropdown ──────────────────────────────────────────────────────
 
@@ -390,15 +417,15 @@ export function PostFilter({
               />
             </div>
             <MultiSelectDropdown label="性別" options={genderOptions} {...sel("gender")} />
-            <MultiSelectDropdown label="年代" options={ageBucketOptions} {...sel("age")} />
+            <MultiSelectDropdown label="年齢" options={exactAgeOptions} {...sel("age")} />
             <MultiSelectDropdown label="ステータス" options={statusOptions} {...sel("status")} />
             <MultiSelectDropdown label="居住エリア" options={prefectureOptions} {...sel("prefecture")} />
           </FilterSection>
 
           {/* 体型・スペック */}
           <FilterSection title="体型・スペック">
-            <RangeSlider label="身長" rangeMin={135} rangeMax={200} step={5} unit="cm" {...rng("height")} />
-            <RangeSlider label="体重" rangeMin={25} rangeMax={100} step={5} unit="kg" {...rng("weight")} />
+            <MultiSelectDropdown label="身長" options={exactHeightOptions} {...sel("height")} />
+            <MultiSelectDropdown label="体重" options={exactWeightOptions} {...sel("weight")} />
             <MultiSelectDropdown label="カップ数（女性）" options={cupSizeOptions} {...sel("cupSize")} />
             <RangeSlider label="チンコの長さ（男性）" rangeMin={2} rangeMax={20} step={2} unit="cm" {...rng("penisLength")} />
             <MultiSelectDropdown label="MBTI" options={mbtiOptions} {...sel("mbti")} />

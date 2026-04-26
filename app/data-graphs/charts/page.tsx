@@ -17,7 +17,7 @@ export default function DataGraphsChartsPage() {
             <ChevronLeft className="size-4" />
             データグラフへ戻る
           </Link>
-          <p className="mt-4 text-sm font-medium text-slate-600">用意済みグラフ</p>
+          <p className="mt-4 text-sm font-medium text-slate-600">基礎グラフ</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
             人気の見方をそのままチェック
           </h1>

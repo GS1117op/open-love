@@ -35,27 +35,31 @@ const mbtiOptions = [
 ];
 
 const ageOptions: { label: string; value: number }[] = [
-  ...Array.from({ length: 9 }, (_, i) => {
-    const v = 15 + i * 5;
+  ...Array.from({ length: 45 }, (_, i) => {
+    const v = 15 + i;
     return { label: `${v}歳`, value: v };
   }),
-  { label: "60歳以上", value: 60 },
+  ...Array.from({ length: 20 }, (_, i) => {
+    const v = 60 + i;
+    return { label: `${v}歳`, value: v };
+  }),
+  { label: "80歳", value: 80 },
 ];
 
 const heightOptions: { label: string; value: number }[] = [
-  ...Array.from({ length: 13 }, (_, i) => {
-    const v = 135 + i * 5;
+  ...Array.from({ length: 65 }, (_, i) => {
+    const v = 135 + i;
     return { label: `${v}cm`, value: v };
   }),
-  { label: "200cm以上", value: 200 },
+  { label: "200cm", value: 200 },
 ];
 
 const weightOptions: { label: string; value: number }[] = [
-  ...Array.from({ length: 15 }, (_, i) => {
-    const v = 25 + i * 5;
+  ...Array.from({ length: 75 }, (_, i) => {
+    const v = 25 + i;
     return { label: `${v}kg`, value: v };
   }),
-  { label: "100kg以上", value: 100 },
+  { label: "100kg", value: 100 },
 ];
 
 const penisLengthOptions: { label: string; value: number }[] = [
@@ -73,6 +77,48 @@ const incomeOptions: { label: string; value: number }[] = [
   }),
   { label: "2000万円以上", value: 2000 },
 ];
+
+function createNumberOptions(start: number, end: number, unit = "") {
+  return Array.from({ length: end - start + 1 }, (_, index) => {
+    const value = start + index;
+    return { label: `${value}${unit}`, value };
+  });
+}
+
+const firstExperienceAgeOptions = [
+  { label: "未経験", value: 0 },
+  ...createNumberOptions(10, 79, "歳"),
+  { label: "80歳以上", value: 80 },
+];
+const relationshipCountOptions = [
+  ...createNumberOptions(0, 99, "人"),
+  { label: "100人以上", value: 100 },
+];
+const experienceCountOptions = [
+  ...createNumberOptions(0, 99, "人"),
+  { label: "100人以上", value: 100 },
+];
+const sexFrequencyOptions = [
+  ...createNumberOptions(0, 29, "回"),
+  { label: "30回以上", value: 30 },
+];
+const idealSexFrequencyOptions = [
+  ...createNumberOptions(0, 29, "回"),
+  { label: "30回以上", value: 30 },
+];
+const masturbationFrequencyOptions = [
+  ...createNumberOptions(0, 49, "回"),
+  { label: "50回以上", value: 50 },
+];
+const sexDurationOptions = Array.from({ length: 37 }, (_, index) => {
+  const value = index * 5;
+  return { label: `${value}分`, value };
+});
+const idealSexDurationOptions = Array.from({ length: 37 }, (_, index) => {
+  const value = index * 5;
+  return { label: `${value}分`, value };
+});
+const sexSatisfactionOptions = createNumberOptions(0, 100);
 
 const educationOptions = [
   "東京一工（東大・京大・一橋・東工大）",
@@ -339,6 +385,10 @@ const [cheatedLevel, setCheatedLevel] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
+  const stackedFieldClass = "flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3";
+  const basicLabelClass = "text-sm font-medium text-slate-700 sm:w-28 sm:shrink-0";
+  const detailLabelClass = "text-sm font-medium text-slate-700 sm:w-48 sm:shrink-0";
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -531,8 +581,8 @@ setCheatedLevel("");
             className="border-sky-100 bg-sky-50/60"
           >
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   ニックネーム
                 </span>
                 <Input
@@ -543,14 +593,14 @@ setCheatedLevel("");
                 />
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   性別
                 </span>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   <option>女性</option>
@@ -560,14 +610,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   年齢
                 </span>
                 <select
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {ageOptions.map((opt) => (
@@ -578,14 +628,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   ステータス
                 </span>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   <option>独身</option>
@@ -595,14 +645,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   居住エリア
                 </span>
                 <select
                   value={prefecture}
                   onChange={(e) => setPrefecture(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {prefectures.map((prefecture) => (
@@ -613,14 +663,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   身長
                 </span>
                 <select
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {heightOptions.map((opt) => (
@@ -631,14 +681,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   体重
                 </span>
                 <select
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {weightOptions.map((opt) => (
@@ -649,14 +699,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   MBTI
                 </span>
                 <select
                   value={mbti}
                   onChange={(e) => setMbti(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {mbtiOptions.map((option) => (
@@ -667,14 +717,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   年収
                 </span>
                 <select
                   value={income}
                   onChange={(e) => setIncome(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {incomeOptions.map((opt) => (
@@ -685,14 +735,14 @@ setCheatedLevel("");
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={basicLabelClass}>
                   学歴
                 </span>
                 <select
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
-                  className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                 >
                   <option value="">未選択</option>
                   {educationOptions.map((option) => (
@@ -704,14 +754,14 @@ setCheatedLevel("");
               </div>
 
               {gender === "女性" ? (
-                <div className="flex items-center gap-3">
-                  <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+                <div className={stackedFieldClass}>
+                  <span className={basicLabelClass}>
                     カップ数
                   </span>
                   <select
                     value={cupSize}
                     onChange={(e) => setCupSize(e.target.value)}
-                    className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                    className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                   >
                     <option value="">未選択</option>
                     {["A", "B", "C", "D", "E", "F", "G", "H以上"].map(
@@ -726,14 +776,14 @@ setCheatedLevel("");
               ) : null}
 
               {gender === "男性" ? (
-                <div className="flex items-center gap-3">
-                  <span className="w-28 shrink-0 text-sm font-medium text-slate-700">
+                <div className={stackedFieldClass}>
+                  <span className={basicLabelClass}>
                     チンコの長さ
                   </span>
                   <select
                     value={penisLength}
                     onChange={(e) => setPenisLength(e.target.value)}
-                    className="flex-1 h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                    className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
                   >
                     <option value="">未選択</option>
                     {penisLengthOptions.map((opt) => (
@@ -786,131 +836,174 @@ setCheatedLevel("");
             className="border-rose-100 bg-rose-50/60"
           >
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   初体験の年齢
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="歳"
+                <select
                   value={firstExperienceAge}
                   onChange={(e) => setFirstExperienceAge(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {firstExperienceAgeOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   付き合った人数
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="人"
+                <select
                   value={relationshipCount}
                   onChange={(e) => setRelationshipCount(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {relationshipCountOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   経験人数
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="人"
+                <select
                   value={experienceCount}
                   onChange={(e) => setExperienceCount(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {experienceCountOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   1週間のセックス回数（実態）
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="回"
+                <select
                   value={sexFrequency}
                   onChange={(e) => setSexFrequency(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {sexFrequencyOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   1週間のセックス回数（理想）
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="回"
+                <select
                   value={idealSexFrequency}
                   onChange={(e) => setIdealSexFrequency(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {idealSexFrequencyOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   1週間のオナニー回数
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="回"
+                <select
                   value={masturbationFrequency}
                   onChange={(e) => setMasturbationFrequency(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {masturbationFrequencyOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   セックス1回の時間（実態）
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="分"
+                <select
                   value={sexDuration}
                   onChange={(e) => setSexDuration(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {sexDurationOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   セックス1回の時間（理想）
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  placeholder="分"
+                <select
                   value={idealSexDuration}
                   onChange={(e) => setIdealSexDuration(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {idealSexDurationOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="w-48 shrink-0 text-sm font-medium text-slate-700">
+              <div className={stackedFieldClass}>
+                <span className={detailLabelClass}>
                   現在のセックスライフの満足度（0〜100）
                 </span>
-                <Input
-                  className="flex-1"
-                  type="number"
-                  min={0}
-                  max={100}
-                  placeholder="0〜100"
+                <select
                   value={sexSatisfaction}
                   onChange={(e) => setSexSatisfaction(e.target.value)}
-                />
+                  className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:flex-1"
+                >
+                  <option value="">未選択</option>
+                  {sexSatisfactionOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.value}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="flex items-start gap-3">
-                <span className="w-48 shrink-0 pt-2 text-sm font-medium text-slate-700">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+                <span className="text-sm font-medium text-slate-700 sm:w-48 sm:shrink-0 sm:pt-2">
                   点数の理由
                 </span>
                 <textarea
-                  className="flex-1 min-h-[80px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="min-h-[140px] w-full rounded-md border border-slate-200 bg-white px-3 py-3 text-sm sm:min-h-[120px] sm:flex-1"
                   placeholder="満足な点、不満な点を自由に記述してください"
                   value={sexSatisfactionNote}
                   onChange={(e) => setSexSatisfactionNote(e.target.value)}

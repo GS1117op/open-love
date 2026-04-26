@@ -1,11 +1,9 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { experienceOptions, ratingOptions } from "@/lib/post-metadata";
 import { PostChartCard, type ChartDatum } from "./post-chart-card";
-import { PostStats } from "./post-stats";
 import { cn } from "@/lib/utils";
 import { getPostSectionPalette, type PostSectionKey } from "@/lib/post-section-colors";
 import {
@@ -76,8 +74,11 @@ type SectionConfig = {
 type GenderDashboard = {
   gender: "女性" | "男性";
   totalCount: number;
+  averageAge: number | null;
+  averageRelationshipCount: number | null;
   averageExperienceCount: number | null;
   averageSexFrequency: number | null;
+  averageSatisfaction: number | null;
 };
 
 type DashboardData = {
@@ -150,6 +151,11 @@ type SelectOption = {
   value: string;
 };
 
+type NumericSelectOption = {
+  label: string;
+  value: number;
+};
+
 const SELECT_COLUMNS = `
   gender,
   age,
@@ -196,6 +202,221 @@ const HEIGHT_ORDER = ["140未満", "140-149", "150-159", "160-169", "170-179", "
 const WEIGHT_ORDER = ["40未満", "40-49", "50-59", "60-69", "70-79", "80以上", UNKNOWN_LABEL];
 const LENGTH_ORDER = ["5未満", "5-9", "10-14", "15-19", "20以上", UNKNOWN_LABEL];
 const DURATION_ORDER = ["0-9", "10-19", "20-29", "30-44", "45-59", "60以上", UNKNOWN_LABEL];
+
+const FORM_GENDER_OPTIONS = ["女性", "男性", "その他", "回答しない"] as const;
+const FORM_STATUS_OPTIONS = ["独身", "交際中", "既婚", "離婚"] as const;
+const FORM_MBTI_OPTIONS = [
+  "INTJ（建築家）",
+  "INTP（論理学者）",
+  "ENTJ（指揮官）",
+  "ENTP（討論者）",
+  "INFJ（提唱者）",
+  "INFP（仲介者）",
+  "ENFJ（主人公）",
+  "ENFP（運動家）",
+  "ISTJ（管理者）",
+  "ISFJ（擁護者）",
+  "ESTJ（幹部）",
+  "ESFJ（領事）",
+  "ISTP（巨匠）",
+  "ISFP（冒険家）",
+  "ESTP（起業家）",
+  "ESFP（エンターテイナー）",
+] as const;
+const FORM_AGE_OPTIONS: NumericSelectOption[] = [
+  ...Array.from({ length: 9 }, (_, i) => {
+    const value = 15 + i * 5;
+    return { label: `${value}歳`, value };
+  }),
+  { label: "60歳以上", value: 60 },
+];
+const FORM_HEIGHT_OPTIONS: NumericSelectOption[] = [
+  ...Array.from({ length: 13 }, (_, i) => {
+    const value = 135 + i * 5;
+    return { label: `${value}cm`, value };
+  }),
+  { label: "200cm以上", value: 200 },
+];
+const FORM_WEIGHT_OPTIONS: NumericSelectOption[] = [
+  ...Array.from({ length: 15 }, (_, i) => {
+    const value = 25 + i * 5;
+    return { label: `${value}kg`, value };
+  }),
+  { label: "100kg以上", value: 100 },
+];
+const FORM_PENIS_LENGTH_OPTIONS: NumericSelectOption[] = [
+  ...Array.from({ length: 9 }, (_, i) => {
+    const value = (i + 1) * 2;
+    return { label: `${value}cm`, value };
+  }),
+  { label: "20cm以上", value: 20 },
+];
+const FORM_INCOME_OPTIONS: NumericSelectOption[] = [
+  ...Array.from({ length: 19 }, (_, i) => {
+    const value = (i + 1) * 100;
+    return { label: `${value}万円台`, value };
+  }),
+  { label: "2000万円以上", value: 2000 },
+];
+const FORM_EDUCATION_OPTIONS = [
+  "東京一工（東大・京大・一橋・東工大）",
+  "旧帝大（北大・東北大・名古屋大・阪大・九大）",
+  "早慶（早稲田・慶應）",
+  "上智・東京理科大・ICU",
+  "MARCH・関関同立",
+  "日東駒専・産近甲龍",
+  "その他4年制大学",
+  "短大・専門学校",
+  "高卒",
+  "中卒",
+] as const;
+const FORM_PREFECTURE_OPTIONS = [
+  "北海道",
+  "青森県",
+  "岩手県",
+  "宮城県",
+  "秋田県",
+  "山形県",
+  "福島県",
+  "茨城県",
+  "栃木県",
+  "群馬県",
+  "埼玉県",
+  "千葉県",
+  "東京都",
+  "神奈川県",
+  "新潟県",
+  "富山県",
+  "石川県",
+  "福井県",
+  "山梨県",
+  "長野県",
+  "岐阜県",
+  "静岡県",
+  "愛知県",
+  "三重県",
+  "滋賀県",
+  "京都府",
+  "大阪府",
+  "兵庫県",
+  "奈良県",
+  "和歌山県",
+  "鳥取県",
+  "島根県",
+  "岡山県",
+  "広島県",
+  "山口県",
+  "徳島県",
+  "香川県",
+  "愛媛県",
+  "高知県",
+  "福岡県",
+  "佐賀県",
+  "長崎県",
+  "熊本県",
+  "大分県",
+  "宮崎県",
+  "鹿児島県",
+  "沖縄県",
+] as const;
+const FORM_CUP_SIZE_OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H以上"] as const;
+const FORM_RATING_OPTIONS = {
+  marriageIntent: [
+    "全く結婚したくない",
+    "あまり結婚したくない",
+    "どちらともいえない",
+    "できれば結婚したい",
+    "強く結婚したい",
+  ],
+  housewifePreference: [
+    "全く希望しない",
+    "あまり希望しない",
+    "どちらともいえない",
+    "できれば希望する",
+    "強く希望する",
+  ],
+  desiredChildren: [
+    "子供は欲しくない",
+    "できれば欲しくない",
+    "どちらともいえない",
+    "できれば欲しい",
+    "強く欲しい",
+  ],
+  cheatingDefinition: [
+    "肉体関係から",
+    "キスから",
+    "手をつなぐ・密着から",
+    "2人きりで会うから",
+    "連絡を取り合う時点で",
+  ],
+  cheatingDesire: [
+    "全くない",
+    "ほとんどない",
+    "少しある",
+    "かなりある",
+    "強くある",
+  ],
+  reactionToCheating: [
+    "許す",
+    "話し合って考える",
+    "条件次第で別れる",
+    "基本的に別れる",
+    "絶対に別れる",
+  ],
+} as const;
+const FORM_EXPERIENCE_OPTIONS = {
+  cohabitation: [
+    "全くない",
+    "少しある（短期間）",
+    "ある（数ヶ月程度）",
+    "長期間ある（1年以上）",
+    "現在同棲中",
+  ],
+  datingApp: [
+    "全く使ったことがない",
+    "少し使ったことがある",
+    "何度か使ったことがある",
+    "頻繁に使っている",
+    "現在もメインで使っている",
+  ],
+  noCondom: [
+    "一度もない",
+    "1〜2回だけある",
+    "何度かある",
+    "よくある",
+    "ほぼ毎回",
+  ],
+  creampie: [
+    "一度もない",
+    "1〜2回だけある",
+    "何度かある",
+    "よくある",
+    "ほぼ毎回",
+  ],
+  cheating: [
+    "一度もない",
+    "過去に1回だけある",
+    "何度かある",
+    "複数人である",
+    "継続的にしている",
+  ],
+  cheated: [
+    "一度もない",
+    "過去に1回だけある",
+    "何度かある",
+    "複数の相手にされたことがある",
+    "頻繁に経験している",
+  ],
+} as const;
+
+function toSelectOptions(options: readonly string[]): SelectOption[] {
+  return options.map((label) => ({ label, value: label }));
+}
+
+function toNumericSelectOptions(options: readonly NumericSelectOption[]): SelectOption[] {
+  return options.map((option) => ({ label: option.label, value: String(option.value) }));
+}
+
 function toScaleFilterOptions(options: readonly string[]): SelectOption[] {
   return options.map((label, index) => ({
     label,
@@ -221,6 +442,14 @@ function calculateAverage(values: Array<number | null>) {
     return null;
   }
   return validValues.reduce((sum, value) => sum + value, 0) / validValues.length;
+}
+
+function formatSummaryValue(value: number | null | undefined, suffix = "", digits = 1) {
+  if (value == null || Number.isNaN(value)) {
+    return "-";
+  }
+
+  return `${value.toFixed(digits)}${suffix}`;
 }
 
 function normalizeGender(value: string | null) {
@@ -252,7 +481,7 @@ function normalizeGender(value: string | null) {
     return "男性";
   }
 
-  return UNKNOWN_LABEL;
+  return value?.trim() || UNKNOWN_LABEL;
 }
 
 function normalizeStatus(value: string | null) {
@@ -360,6 +589,14 @@ function rangeBucket(
 
 const customFieldConfigs: CustomFieldConfig[] = [
   {
+    key: "gender",
+    label: "性別",
+    sectionKey: "basic",
+    description: "性別の分布です。",
+    chartType: "pie",
+    getValue: (post) => normalizeGender(post.gender),
+  },
+  {
     key: "status",
     label: "ステータス",
     sectionKey: "basic",
@@ -379,7 +616,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "prefecture",
-    label: "都道府県",
+    label: "居住エリア",
     sectionKey: "basic",
     description: "都道府県の分布です。",
     chartType: "bar",
@@ -456,7 +693,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "penis_length",
-    label: "ペニスの長さ",
+    label: "チンコの長さ",
     sectionKey: "basic",
     description: "ペニス長の分布です。",
     chartType: "bar",
@@ -472,7 +709,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "first_experience_age",
-    label: "初体験年齢",
+    label: "初体験の年齢",
     sectionKey: "romance",
     description: "初体験年齢の分布です。",
     chartType: "bar",
@@ -481,7 +718,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "relationship_count",
-    label: "交際人数",
+    label: "付き合った人数",
     sectionKey: "romance",
     description: "交際人数の分布です。",
     chartType: "bar",
@@ -499,7 +736,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "sex_frequency",
-    label: "セックス頻度",
+    label: "1週間のセックス回数（実態）",
     sectionKey: "romance",
     description: "セックス頻度の分布です。",
     chartType: "bar",
@@ -508,7 +745,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "ideal_sex_frequency",
-    label: "理想のセックス頻度",
+    label: "1週間のセックス回数（理想）",
     sectionKey: "romance",
     description: "理想のセックス頻度の分布です。",
     chartType: "bar",
@@ -517,7 +754,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "masturbation_frequency",
-    label: "自慰頻度",
+    label: "1週間のオナニー回数",
     sectionKey: "romance",
     description: "自慰頻度の分布です。",
     chartType: "bar",
@@ -526,7 +763,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "sex_duration",
-    label: "セックス時間",
+    label: "セックス1回の時間（実態）",
     sectionKey: "romance",
     description: "セックス時間の分布です。",
     chartType: "bar",
@@ -543,7 +780,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "ideal_sex_duration",
-    label: "理想のセックス時間",
+    label: "セックス1回の時間（理想）",
     sectionKey: "romance",
     description: "理想のセックス時間の分布です。",
     chartType: "bar",
@@ -560,7 +797,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "sex_satisfaction",
-    label: "満足度",
+    label: "現在のセックスライフの満足度（0〜100）",
     sectionKey: "romance",
     description: "満足度の分布です。",
     chartType: "bar",
@@ -569,7 +806,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "marriage_intent",
-    label: "結婚意欲",
+    label: "結婚願望",
     sectionKey: "values",
     description: "結婚意欲の分布です。",
     chartType: "bar",
@@ -587,7 +824,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "desired_children",
-    label: "子ども希望",
+    label: "子供の人数願望",
     sectionKey: "values",
     description: "子ども希望の分布です。",
     chartType: "bar",
@@ -596,7 +833,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "cheating_definition",
-    label: "浮気の定義",
+    label: "どこからが浮気か",
     sectionKey: "values",
     description: "浮気の定義の分布です。",
     chartType: "bar",
@@ -614,7 +851,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "reaction_to_cheating",
-    label: "浮気された時の対応",
+    label: "浮気されたらどうするか",
     sectionKey: "values",
     description: "浮気された時の対応の分布です。",
     chartType: "bar",
@@ -632,7 +869,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "dating_app_level",
-    label: "マッチングアプリ経験",
+    label: "マチアプ経験",
     sectionKey: "experience",
     description: "マッチングアプリ経験の分布です。",
     chartType: "bar",
@@ -641,7 +878,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "no_condom_level",
-    label: "ゴムなし経験",
+    label: "ゴムなしの経験",
     sectionKey: "experience",
     description: "ゴムなし経験の分布です。",
     chartType: "bar",
@@ -650,7 +887,7 @@ const customFieldConfigs: CustomFieldConfig[] = [
   },
   {
     key: "creampie_level",
-    label: "中出し経験",
+    label: "中出しの経験",
     sectionKey: "experience",
     description: "中出し経験の分布です。",
     chartType: "bar",
@@ -683,48 +920,99 @@ const filterFieldConfigs: FilterFieldConfig[] = [
     label: "性別",
     mode: "multi",
     getValue: (post) => normalizeGender(post.gender),
-    order: ["女性", "男性"],
-    options: [
-      { label: "女性", value: "女性" },
-      { label: "男性", value: "男性" },
-    ],
+    order: [...FORM_GENDER_OPTIONS, UNKNOWN_LABEL],
+    options: toSelectOptions(FORM_GENDER_OPTIONS),
   },
   {
     key: "status",
     label: "ステータス",
     mode: "multi",
-    getValue: (post) => normalizeStatus(post.status),
-    order: STATUS_ORDER,
+    getValue: (post) => post.status?.trim() || UNKNOWN_LABEL,
+    order: [...FORM_STATUS_OPTIONS, UNKNOWN_LABEL],
+    options: toSelectOptions(FORM_STATUS_OPTIONS),
   },
   {
     key: "prefecture",
-    label: "都道府県",
+    label: "居住エリア",
     mode: "multi",
     getValue: (post) => post.prefecture?.trim() || UNKNOWN_LABEL,
+    options: toSelectOptions(FORM_PREFECTURE_OPTIONS),
   },
   {
     key: "mbti",
     label: "MBTI",
     mode: "multi",
     getValue: (post) => post.mbti?.trim() || UNKNOWN_LABEL,
+    options: toSelectOptions(FORM_MBTI_OPTIONS),
   },
   {
     key: "age",
     label: "年齢",
-    mode: "range",
-    getValue: (post) => post.age,
-    minValue: 15,
-    maxValue: 70,
-    step: 1,
+    mode: "multi",
+    getValue: (post) => (post.age != null ? String(post.age) : UNKNOWN_LABEL),
+    options: toNumericSelectOptions(FORM_AGE_OPTIONS),
+  },
+  {
+    key: "height",
+    label: "身長",
+    mode: "multi",
+    getValue: (post) => (post.height != null ? String(post.height) : UNKNOWN_LABEL),
+    options: toNumericSelectOptions(FORM_HEIGHT_OPTIONS),
+  },
+  {
+    key: "weight",
+    label: "体重",
+    mode: "multi",
+    getValue: (post) => (post.weight != null ? String(post.weight) : UNKNOWN_LABEL),
+    options: toNumericSelectOptions(FORM_WEIGHT_OPTIONS),
   },
   {
     key: "income",
     label: "年収",
+    mode: "multi",
+    getValue: (post) => (post.income != null ? String(post.income) : UNKNOWN_LABEL),
+    options: toNumericSelectOptions(FORM_INCOME_OPTIONS),
+  },
+  {
+    key: "education",
+    label: "学歴",
+    mode: "multi",
+    getValue: (post) => post.education?.trim() || UNKNOWN_LABEL,
+    options: toSelectOptions(FORM_EDUCATION_OPTIONS),
+  },
+  {
+    key: "cup_size",
+    label: "カップ数",
+    mode: "multi",
+    getValue: (post) => post.cup_size?.trim() || UNKNOWN_LABEL,
+    options: toSelectOptions(FORM_CUP_SIZE_OPTIONS),
+  },
+  {
+    key: "penis_length",
+    label: "チンコの長さ",
+    mode: "multi",
+    getValue: (post) => (post.penis_length != null ? String(post.penis_length) : UNKNOWN_LABEL),
+    options: toNumericSelectOptions(FORM_PENIS_LENGTH_OPTIONS),
+  },
+  {
+    key: "first_experience_age",
+    label: "初体験の年齢",
     mode: "range",
-    getValue: (post) => post.income,
-    minValue: 100,
-    maxValue: 2000,
-    step: 50,
+    getValue: (post) => post.first_experience_age,
+    minValue: 10,
+    maxValue: 80,
+    step: 1,
+    unit: "歳",
+  },
+  {
+    key: "relationship_count",
+    label: "付き合った人数",
+    mode: "range",
+    getValue: (post) => post.relationship_count,
+    minValue: 0,
+    maxValue: 100,
+    step: 1,
+    unit: "人",
   },
   {
     key: "experience_count",
@@ -732,42 +1020,100 @@ const filterFieldConfigs: FilterFieldConfig[] = [
     mode: "range",
     getValue: (post) => post.experience_count,
     minValue: 0,
-    maxValue: 30,
+    maxValue: 100,
     step: 1,
+    unit: "人",
   },
   {
     key: "sex_frequency",
-    label: "セックス頻度",
+    label: "1週間のセックス回数（実態）",
     mode: "range",
     getValue: (post) => post.sex_frequency,
     minValue: 0,
-    maxValue: 14,
+    maxValue: 30,
     step: 1,
+    unit: "回",
+  },
+  {
+    key: "ideal_sex_frequency",
+    label: "1週間のセックス回数（理想）",
+    mode: "range",
+    getValue: (post) => post.ideal_sex_frequency,
+    minValue: 0,
+    maxValue: 30,
+    step: 1,
+    unit: "回",
+  },
+  {
+    key: "masturbation_frequency",
+    label: "1週間のオナニー回数",
+    mode: "range",
+    getValue: (post) => post.masturbation_frequency,
+    minValue: 0,
+    maxValue: 50,
+    step: 1,
+    unit: "回",
+  },
+  {
+    key: "sex_duration",
+    label: "セックス1回の時間（実態）",
+    mode: "range",
+    getValue: (post) => post.sex_duration,
+    minValue: 0,
+    maxValue: 180,
+    step: 1,
+    unit: "分",
+  },
+  {
+    key: "ideal_sex_duration",
+    label: "セックス1回の時間（理想）",
+    mode: "range",
+    getValue: (post) => post.ideal_sex_duration,
+    minValue: 0,
+    maxValue: 180,
+    step: 1,
+    unit: "分",
   },
   {
     key: "sex_satisfaction",
-    label: "満足度",
+    label: "現在のセックスライフの満足度（0〜100）",
     mode: "range",
     getValue: (post) => post.sex_satisfaction,
     minValue: 0,
     maxValue: 100,
-    step: 5,
+    step: 1,
   },
   {
     key: "marriage_intent",
-    label: "結婚意欲",
+    label: "結婚願望",
     mode: "multi",
     getValue: (post) => scoreValue(post.marriage_intent),
     order: SCORE_ORDER,
-    options: toScaleFilterOptions(ratingOptions.marriageIntent),
+    options: toScaleFilterOptions(FORM_RATING_OPTIONS.marriageIntent),
+  },
+  {
+    key: "housewife_preference",
+    label: "専業主婦希望",
+    mode: "multi",
+    getValue: (post) => scoreValue(post.housewife_preference),
+    order: SCORE_ORDER,
+    options: toScaleFilterOptions(FORM_RATING_OPTIONS.housewifePreference),
   },
   {
     key: "desired_children",
-    label: "子ども希望",
+    label: "子供の人数願望",
     mode: "multi",
     getValue: (post) => scoreValue(post.desired_children),
     order: SCORE_ORDER,
-    options: toScaleFilterOptions(ratingOptions.desiredChildren),
+    options: toScaleFilterOptions(FORM_RATING_OPTIONS.desiredChildren),
+  },
+  {
+    key: "cheating_definition",
+    label: "どこからが浮気か",
+    mode: "multi",
+    getValue: (post) => scoreValue(post.cheating_definition),
+    order: SCORE_ORDER,
+    options: toScaleFilterOptions(FORM_RATING_OPTIONS.cheatingDefinition),
   },
   {
     key: "cheating_desire",
@@ -775,7 +1121,15 @@ const filterFieldConfigs: FilterFieldConfig[] = [
     mode: "multi",
     getValue: (post) => scoreValue(post.cheating_desire),
     order: SCORE_ORDER,
-    options: toScaleFilterOptions(ratingOptions.cheatingDesire),
+    options: toScaleFilterOptions(FORM_RATING_OPTIONS.cheatingDesire),
+  },
+  {
+    key: "reaction_to_cheating",
+    label: "浮気されたらどうするか",
+    mode: "multi",
+    getValue: (post) => scoreValue(post.reaction_to_cheating),
+    order: SCORE_ORDER,
+    options: toScaleFilterOptions(FORM_RATING_OPTIONS.reactionToCheating),
   },
   {
     key: "cohabitation_level",
@@ -783,15 +1137,31 @@ const filterFieldConfigs: FilterFieldConfig[] = [
     mode: "multi",
     getValue: (post) => scoreValue(post.cohabitation_level),
     order: SCORE_ORDER,
-    options: toScaleFilterOptions(experienceOptions.cohabitation),
+    options: toScaleFilterOptions(FORM_EXPERIENCE_OPTIONS.cohabitation),
   },
   {
     key: "dating_app_level",
-    label: "マッチングアプリ経験",
+    label: "マチアプ経験",
     mode: "multi",
     getValue: (post) => scoreValue(post.dating_app_level),
     order: SCORE_ORDER,
-    options: toScaleFilterOptions(experienceOptions.datingApp),
+    options: toScaleFilterOptions(FORM_EXPERIENCE_OPTIONS.datingApp),
+  },
+  {
+    key: "no_condom_level",
+    label: "ゴムなしの経験",
+    mode: "multi",
+    getValue: (post) => scoreValue(post.no_condom_level),
+    order: SCORE_ORDER,
+    options: toScaleFilterOptions(FORM_EXPERIENCE_OPTIONS.noCondom),
+  },
+  {
+    key: "creampie_level",
+    label: "中出しの経験",
+    mode: "multi",
+    getValue: (post) => scoreValue(post.creampie_level),
+    order: SCORE_ORDER,
+    options: toScaleFilterOptions(FORM_EXPERIENCE_OPTIONS.creampie),
   },
   {
     key: "cheating_level",
@@ -799,7 +1169,15 @@ const filterFieldConfigs: FilterFieldConfig[] = [
     mode: "multi",
     getValue: (post) => scoreValue(post.cheating_level),
     order: SCORE_ORDER,
-    options: toScaleFilterOptions(experienceOptions.cheating),
+    options: toScaleFilterOptions(FORM_EXPERIENCE_OPTIONS.cheating),
+  },
+  {
+    key: "cheated_level",
+    label: "浮気された経験",
+    mode: "multi",
+    getValue: (post) => scoreValue(post.cheated_level),
+    order: SCORE_ORDER,
+    options: toScaleFilterOptions(FORM_EXPERIENCE_OPTIONS.cheated),
   },
 ];
 
@@ -850,6 +1228,8 @@ type RangeSliderProps = {
   step?: number;
   unit?: string;
   onChange: (bound: "min" | "max", value: string) => void;
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
 };
 
 function RangeSlider({
@@ -859,11 +1239,43 @@ function RangeSlider({
   step = 1,
   unit = "",
   onChange,
+  onInteractionStart,
+  onInteractionEnd,
 }: RangeSliderProps) {
   const currentMin = value.min ? Number(value.min) : minValue;
   const currentMax = value.max ? Number(value.max) : maxValue;
   const leftPercent = ((currentMin - minValue) / (maxValue - minValue)) * 100;
   const rightPercent = ((currentMax - minValue) / (maxValue - minValue)) * 100;
+  const [activeBound, setActiveBound] = useState<"min" | "max" | null>(null);
+
+  function clampValue(nextValue: number, bound: "min" | "max") {
+    if (bound === "min") {
+      return Math.min(nextValue, currentMax);
+    }
+
+    return Math.max(nextValue, currentMin);
+  }
+
+  function getValueFromPointer(clientX: number, rect: DOMRect) {
+    const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+    const rawValue = minValue + ratio * (maxValue - minValue);
+    const steppedValue = Math.round(rawValue / step) * step;
+    return Math.min(maxValue, Math.max(minValue, steppedValue));
+  }
+
+  function updateFromPointer(
+    event: ReactPointerEvent<HTMLDivElement>,
+    boundOverride?: "min" | "max"
+  ) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const nextRawValue = getValueFromPointer(event.clientX, rect);
+    const minDistance = Math.abs(nextRawValue - currentMin);
+    const maxDistance = Math.abs(nextRawValue - currentMax);
+    const bound = boundOverride ?? (minDistance <= maxDistance ? "min" : "max");
+    const nextValue = clampValue(nextRawValue, bound);
+    onChange(bound, String(nextValue));
+    return bound;
+  }
 
   return (
     <div className="space-y-1">
@@ -872,7 +1284,7 @@ function RangeSlider({
         <span>~</span>
         <span>{value.max ? `${value.max}${unit}` : "上限なし"}</span>
       </div>
-      <div className="relative h-8">
+      <div className="relative h-10 px-1">
         <div className="absolute inset-x-1 top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200/70" />
         <div
           className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-400"
@@ -881,17 +1293,44 @@ function RangeSlider({
             width: `calc(${Math.max(rightPercent - leftPercent, 0)}% - 0.5rem)`,
           }}
         />
+        <div
+          className="absolute inset-x-0 -inset-y-3 z-10 cursor-pointer touch-none"
+          onPointerDown={(event) => {
+            const bound = updateFromPointer(event);
+            setActiveBound(bound);
+            onInteractionStart?.();
+            event.currentTarget.setPointerCapture(event.pointerId);
+          }}
+          onPointerMove={(event) => {
+            if (activeBound === null) return;
+            updateFromPointer(event, activeBound);
+          }}
+          onPointerUp={(event) => {
+            if (activeBound !== null) {
+              updateFromPointer(event, activeBound);
+            }
+            setActiveBound(null);
+            onInteractionEnd?.();
+          }}
+          onPointerCancel={() => {
+            setActiveBound(null);
+            onInteractionEnd?.();
+          }}
+        />
         <input
           type="range"
           min={minValue}
           max={maxValue}
           step={step}
           value={currentMin}
+          aria-label="下限"
+          onKeyDown={onInteractionStart}
+          onKeyUp={onInteractionEnd}
           onChange={(event) => {
             const nextValue = Math.min(Number(event.target.value), currentMax);
             onChange("min", String(nextValue));
           }}
-          className="pointer-events-none absolute inset-0 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-400 [&::-moz-range-thumb]:bg-white"
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-0 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-none [&::-webkit-slider-thumb]:mt-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-500 [&::-moz-range-thumb]:bg-white"
         />
         <input
           type="range"
@@ -899,11 +1338,14 @@ function RangeSlider({
           max={maxValue}
           step={step}
           value={currentMax}
+          aria-label="上限"
+          onKeyDown={onInteractionStart}
+          onKeyUp={onInteractionEnd}
           onChange={(event) => {
             const nextValue = Math.max(Number(event.target.value), currentMin);
             onChange("max", String(nextValue));
           }}
-          className="pointer-events-none absolute inset-0 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-400 [&::-moz-range-thumb]:bg-white"
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-0 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-none [&::-webkit-slider-thumb]:mt-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-500 [&::-moz-range-thumb]:bg-white"
         />
       </div>
     </div>
@@ -1041,13 +1483,20 @@ function makeChart(
   field: CustomFieldConfig,
   posts: PostGraphRecord[]
 ): ChartConfig {
+  const targetGenders =
+    field.key === "cup_size"
+      ? (["女性"] as const)
+      : field.key === "penis_length"
+        ? (["男性"] as const)
+        : (["女性", "男性"] as const);
+
   return {
     id: createChartId(sectionKey, title),
     title,
     description,
     chartType: field.chartType,
     horizontal: field.horizontal,
-    dataByGender: (["女性", "男性"] as const).map((gender) => ({
+    dataByGender: targetGenders.map((gender) => ({
       label: gender,
       data: createDistribution(
         posts
@@ -1065,10 +1514,17 @@ function buildDashboardData(posts: PostGraphRecord[]): DashboardData {
     return {
       gender,
       totalCount: filteredPosts.length,
+      averageAge: calculateAverage(filteredPosts.map((post) => post.age)),
+      averageRelationshipCount: calculateAverage(
+        filteredPosts.map((post) => post.relationship_count)
+      ),
       averageExperienceCount: calculateAverage(
         filteredPosts.map((post) => post.experience_count)
       ),
       averageSexFrequency: calculateAverage(filteredPosts.map((post) => post.sex_frequency)),
+      averageSatisfaction: calculateAverage(
+        filteredPosts.map((post) => post.sex_satisfaction)
+      ),
     };
   });
 
@@ -1103,7 +1559,7 @@ function buildDashboardData(posts: PostGraphRecord[]): DashboardData {
     ...sectionMeta.map((section) => ({
       ...section,
       charts: customFieldConfigs
-        .filter((field) => field.sectionKey === section.sectionKey)
+        .filter((field) => field.sectionKey === section.sectionKey && field.key !== "gender")
         .map((field) =>
           makeChart(section.sectionKey, field.label, field.description, field, posts)
         ),
@@ -1242,7 +1698,23 @@ function CustomGraphBuilder({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const state = parseBuilderState(searchParams.toString(), builderKey);
+  const search = searchParams.toString();
+  const parsedState = useMemo(
+    () => parseBuilderState(search, builderKey),
+    [builderKey, search]
+  );
+  const [state, setState] = useState(parsedState);
+  const lastSyncedSearchRef = useRef<string | null>(null);
+  const [isRangeInteracting, setIsRangeInteracting] = useState(false);
+
+  useEffect(() => {
+    if (lastSyncedSearchRef.current === search) {
+      lastSyncedSearchRef.current = null;
+      return;
+    }
+
+    setState(parsedState);
+  }, [parsedState, search]);
 
   const selectedFields = state.fields
     .map((key) => customFieldConfigs.find((f) => f.key === key))
@@ -1255,8 +1727,10 @@ function CustomGraphBuilder({
         if (!config || config.mode !== "multi") return [];
         if (config.options) {
           const optionMap = new Map(config.options.map((option) => [option.value, option]));
-          return sortFilterOptions(config.options.map((option) => option.value), config.order)
-            .map((value) => optionMap.get(value))
+          const dynamicValues = [...new Set(posts.map((p) => config.getValue(p)))];
+          const allValues = [...new Set([...config.options.map((option) => option.value), ...dynamicValues])];
+          return sortFilterOptions(allValues, config.order)
+            .map((value) => optionMap.get(value) ?? { label: value, value })
             .filter((option): option is SelectOption => option !== undefined);
         }
 
@@ -1266,18 +1740,38 @@ function CustomGraphBuilder({
     [posts, state.filters]
   );
 
-  function updateState(patch: Partial<BuilderState>) {
-    const next = { ...state, ...patch };
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(getBuilderParamKey(builderKey, "Fields"), next.fields.join(","));
-    params.set(getBuilderParamKey(builderKey, "Chart"), next.chart);
-    params.set(getBuilderParamKey(builderKey, "Combo"), next.combo);
-    if (next.filters.length > 0) {
-      params.set(getBuilderParamKey(builderKey, "Filters"), JSON.stringify(next.filters));
+  useEffect(() => {
+    if (isRangeInteracting) {
+      return;
+    }
+
+    const params = new URLSearchParams(search);
+    params.set(getBuilderParamKey(builderKey, "Fields"), state.fields.join(","));
+    params.set(getBuilderParamKey(builderKey, "Chart"), state.chart);
+    params.set(getBuilderParamKey(builderKey, "Combo"), state.combo);
+    if (state.filters.length > 0) {
+      params.set(getBuilderParamKey(builderKey, "Filters"), JSON.stringify(state.filters));
     } else {
       params.delete(getBuilderParamKey(builderKey, "Filters"));
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
+    const nextSearch = params.toString();
+    if (nextSearch === search) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSyncedSearchRef.current = nextSearch;
+      router.replace(nextSearch ? `${pathname}?${nextSearch}` : pathname, { scroll: false });
+    }, 120);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [builderKey, isRangeInteracting, pathname, router, search, state]);
+
+  function updateState(patch: Partial<BuilderState>) {
+    setState((current) => ({ ...current, ...patch }));
   }
 
   function updateField(index: number, key: string) {
@@ -1484,6 +1978,8 @@ function CustomGraphBuilder({
                       step={config.step}
                       unit={config.unit}
                       onChange={(bound, value) => updateRangeFilter(i, bound, value)}
+                      onInteractionStart={() => setIsRangeInteracting(true)}
+                      onInteractionEnd={() => setIsRangeInteracting(false)}
                     />
                   ) : null}
                 </div>
@@ -1827,20 +2323,52 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
                 男女サマリー
               </h2>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                投稿数と平均値を男女別に比較できます。
+                男女別の投稿数と平均値をコンパクトに比較できます。
               </p>
             </div>
-            <div className="grid gap-4 lg:grid-cols-2">
-              {genderDashboards.map((dashboard) => (
-                <div key={dashboard.gender} className="space-y-2">
-                  <h3 className="text-sm font-semibold text-slate-900">{dashboard.gender}</h3>
-                  <PostStats
-                    totalCount={dashboard.totalCount}
-                    averageExperienceCount={dashboard.averageExperienceCount}
-                    averageSexFrequency={dashboard.averageSexFrequency}
-                  />
-                </div>
-              ))}
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-xs text-slate-700">
+                  <thead className="bg-slate-50 text-[11px] text-slate-500">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">区分</th>
+                      <th className="px-3 py-2 text-right font-semibold">投稿数</th>
+                      <th className="px-3 py-2 text-right font-semibold">平均年齢</th>
+                      <th className="px-3 py-2 text-right font-semibold">平均交際人数</th>
+                      <th className="px-3 py-2 text-right font-semibold">平均経験人数</th>
+                      <th className="px-3 py-2 text-right font-semibold">平均セックス回数/週</th>
+                      <th className="px-3 py-2 text-right font-semibold">平均満足度</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {genderDashboards.map((dashboard) => (
+                      <tr key={dashboard.gender} className="border-t border-slate-200">
+                        <th className="whitespace-nowrap px-3 py-2 text-left text-sm font-semibold text-slate-900">
+                          {dashboard.gender}
+                        </th>
+                        <td className="whitespace-nowrap px-3 py-2 text-right">
+                          {dashboard.totalCount}件
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-right">
+                          {formatSummaryValue(dashboard.averageAge, "歳")}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-right">
+                          {formatSummaryValue(dashboard.averageRelationshipCount, "人")}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-right">
+                          {formatSummaryValue(dashboard.averageExperienceCount, "人")}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-right">
+                          {formatSummaryValue(dashboard.averageSexFrequency, "回")}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-right">
+                          {formatSummaryValue(dashboard.averageSatisfaction, "", 0)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </section>
 

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Share2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -57,20 +57,20 @@ function formatPieTooltip(value: unknown, name: unknown) {
   return [formatCountTooltip(value), String(name ?? "")] as [string, string];
 }
 
-function getChartHeight(dataLength: number, horizontal?: boolean) {
+function getChartHeight(dataLength: number, horizontal?: boolean, mobile = false) {
   if (!horizontal) {
-    return 210;
+    return mobile ? 260 : 210;
   }
 
-  return Math.max(210, dataLength * 28);
+  return Math.max(mobile ? 260 : 210, dataLength * (mobile ? 34 : 28));
 }
 
-function getExpandedChartHeight(dataLength: number, horizontal?: boolean) {
+function getExpandedChartHeight(dataLength: number, horizontal?: boolean, mobile = false) {
   if (!horizontal) {
-    return 340;
+    return mobile ? 400 : 340;
   }
 
-  return Math.max(340, dataLength * 34);
+  return Math.max(mobile ? 420 : 340, dataLength * (mobile ? 40 : 34));
 }
 
 export function PostChartCard({
@@ -84,6 +84,7 @@ export function PostChartCard({
   shareUrl,
 }: PostChartCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const filteredData = data.filter((item) => item.count > 0);
   const seriesList = comparisonData?.length
     ? comparisonData.map((series) => ({
@@ -92,6 +93,18 @@ export function PostChartCard({
       }))
     : null;
   const hasComparisonData = seriesList?.some((series) => series.data.length > 0) ?? false;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 639px)");
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    updateIsMobile();
+    mediaQuery.addEventListener("change", updateIsMobile);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateIsMobile);
+    };
+  }, []);
 
   async function handleCopyShareUrl(event: React.MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
@@ -109,14 +122,20 @@ export function PostChartCard({
   }
 
   function renderChart(seriesData: ChartDatum[], expanded = false) {
+    const shouldUseHorizontal =
+      chartType === "bar" && (horizontal || (isMobile && seriesData.length >= 6));
+    const xAxisAngle = isMobile ? -32 : seriesData.length > 6 ? -18 : 0;
+    const xAxisHeight = isMobile ? 74 : seriesData.length > 6 ? 56 : 30;
+    const xAxisInterval = isMobile ? (seriesData.length > 8 ? 1 : 0) : 0;
+
     return (
       <div
         className="w-full"
         style={{
           height: `${
             expanded
-              ? getExpandedChartHeight(seriesData.length, horizontal)
-              : getChartHeight(seriesData.length, horizontal)
+              ? getExpandedChartHeight(seriesData.length, shouldUseHorizontal, isMobile)
+              : getChartHeight(seriesData.length, shouldUseHorizontal, isMobile)
           }px`,
         }}
       >
@@ -140,10 +159,19 @@ export function PostChartCard({
               </Pie>
               <Tooltip formatter={formatPieTooltip} />
             </PieChart>
-          ) : horizontal ? (
-            <BarChart data={seriesData} layout="vertical" margin={{ left: 24, right: 12 }}>
+          ) : shouldUseHorizontal ? (
+            <BarChart
+              data={seriesData}
+              layout="vertical"
+              margin={{ left: isMobile ? 8 : 24, right: 12 }}
+            >
               <XAxis type="number" allowDecimals={false} />
-              <YAxis type="category" dataKey="label" width={110} tick={{ fontSize: 12 }} />
+              <YAxis
+                type="category"
+                dataKey="label"
+                width={isMobile ? 88 : 110}
+                tick={{ fontSize: isMobile ? 11 : 12 }}
+              />
               <Tooltip formatter={formatCountTooltip} />
               <Bar dataKey="count" radius={[0, 8, 8, 0]} fill="#0f172a" />
             </BarChart>
@@ -151,13 +179,13 @@ export function PostChartCard({
             <BarChart data={seriesData} margin={{ left: 8, right: 8 }}>
               <XAxis
                 dataKey="label"
-                interval={0}
-                angle={seriesData.length > 6 ? -18 : 0}
-                textAnchor={seriesData.length > 6 ? "end" : "middle"}
-                height={seriesData.length > 6 ? 56 : 30}
-                tick={{ fontSize: 12 }}
+                interval={xAxisInterval}
+                angle={xAxisAngle}
+                textAnchor={xAxisAngle === 0 ? "middle" : "end"}
+                height={xAxisHeight}
+                tick={{ fontSize: isMobile ? 11 : 12 }}
               />
-              <YAxis allowDecimals={false} />
+              <YAxis allowDecimals={false} tick={{ fontSize: isMobile ? 11 : 12 }} />
               <Tooltip formatter={formatCountTooltip} />
               <Bar dataKey="count" radius={[8, 8, 0, 0]}>
                 {seriesData.map((entry, index) => (
@@ -202,7 +230,7 @@ export function PostChartCard({
         {!hasComparisonData && filteredData.length === 0 ? (
           <p className="text-xs text-slate-500">{emptyLabel}</p>
         ) : hasComparisonData && seriesList ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {seriesList.map((series) => (
               <div
                 key={series.label}

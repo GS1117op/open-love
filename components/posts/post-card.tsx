@@ -29,12 +29,22 @@ type PostCardProps = {
 type PostDetail = {
   title: string | null;
   content: string | null;
+  first_experience_age: number | null;
+  relationship_count: number | null;
   experience_count: number | null;
   sex_frequency: number | null;
+  ideal_sex_frequency: number | null;
+  masturbation_frequency: number | null;
+  sex_duration: number | null;
+  ideal_sex_duration: number | null;
+  sex_satisfaction: number | null;
+  sex_satisfaction_note: string | null;
   marriage_intent: number | null;
   housewife_preference: number | null;
   desired_children: number | null;
+  cheating_definition: number | null;
   cheating_desire: number | null;
+  reaction_to_cheating: number | null;
   cohabitation_level: number | null;
   dating_app_level: number | null;
   no_condom_level: number | null;
@@ -46,12 +56,22 @@ type PostDetail = {
 const DETAIL_SELECT_COLUMNS = `
   title,
   content,
+  first_experience_age,
+  relationship_count,
   experience_count,
   sex_frequency,
+  ideal_sex_frequency,
+  masturbation_frequency,
+  sex_duration,
+  ideal_sex_duration,
+  sex_satisfaction,
+  sex_satisfaction_note,
   marriage_intent,
   housewife_preference,
   desired_children,
+  cheating_definition,
   cheating_desire,
+  reaction_to_cheating,
   cohabitation_level,
   dating_app_level,
   no_condom_level,
@@ -64,16 +84,85 @@ function InfoGrid({ title, items, className }: { title: string; items: Array<{ l
   if (items.length === 0) return null;
 
   return (
-    <section className={`rounded-[1.25rem] border p-4 ${className ?? "border-slate-200 bg-slate-50"}`}>
-      <p className="mb-3 text-xs font-semibold tracking-[0.14em] text-slate-500">{title}</p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <section className={`rounded-[1.25rem] border p-3 sm:p-4 ${className ?? "border-slate-200 bg-slate-50"}`}>
+      <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-slate-500">{title}</p>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-3">
         {items.map((item) => (
           <div key={item.label}>
             <p className="text-xs text-slate-500">{item.label}</p>
-            <p className="mt-1 text-sm text-slate-900">{item.value}</p>
+            <p className="mt-0.5 text-sm text-slate-900">{item.value}</p>
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+function CompactProfileSummary({
+  highlights,
+  tags,
+  compact = false,
+  valueOnly = false,
+  cardStyle = false,
+}: {
+  highlights: Array<{ label: string; value: string }>;
+  tags: Array<{ label: string; value: string }>;
+  compact?: boolean;
+  valueOnly?: boolean;
+  cardStyle?: boolean;
+}) {
+  if (highlights.length === 0 && tags.length === 0) return null;
+
+  return (
+    <section className={`rounded-[1.25rem] border border-slate-200 bg-slate-50 ${compact ? "p-2.5" : "p-3"}`}>
+      {highlights.length > 0 ? (
+        <div className={`grid grid-cols-2 ${compact ? "gap-1.5" : "gap-2"}`}>
+          {highlights.map((item) => (
+            <div
+              key={item.label}
+              className={`rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 ${compact ? "px-2.5 py-2" : "px-3 py-2"}`}
+            >
+              <p className={`font-medium tracking-[0.08em] text-slate-500 ${compact ? "text-[9px]" : "text-[10px]"}`}>{item.label}</p>
+              <p className={`mt-0.5 font-semibold leading-4 text-slate-900 ${compact ? "text-xs" : "text-sm leading-5"}`}>{item.value}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {tags.length > 0 ? (
+        <div
+          className={
+            highlights.length > 0
+              ? `mt-2 flex flex-wrap ${compact ? "gap-1" : "gap-1.5"}`
+              : cardStyle
+                ? `grid grid-cols-2 ${compact ? "gap-1.5" : "gap-x-3 gap-y-2"}`
+                : `flex flex-wrap ${compact ? "gap-1" : "gap-1.5"}`
+          }
+        >
+          {tags.map((item) => (
+            <div
+              key={item.label}
+              className={
+                cardStyle
+                  ? "rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100"
+                  : `inline-flex items-center rounded-full border border-slate-200 bg-white text-slate-700 ${compact ? "px-2.5 py-1 text-[11px] leading-4" : "gap-1 px-2.5 py-1 text-[11px] leading-4"}`
+              }
+            >
+              {cardStyle ? (
+                <>
+                  <p className="text-xs text-slate-500">{item.label}</p>
+                  <p className="mt-1 text-sm text-slate-900">{item.value}</p>
+                </>
+              ) : (
+                <>
+                  {valueOnly ? null : <span className="text-slate-500">{item.label}</span>}
+                  <span className="font-medium text-slate-900">{item.value}</span>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -104,6 +193,7 @@ export function PostCard({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
+  const [isUrlDismissed, setIsUrlDismissed] = useState(false);
   const [detail, setDetail] = useState<PostDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -111,11 +201,17 @@ export function PostCard({
   const displayName = nickname?.trim() ? nickname : "匿名ユーザー";
   const formattedDate = createdAt ? new Date(createdAt).toLocaleString("ja-JP") : null;
   const isExpandedByUrl = searchParams.get("post") === id;
-  const isExpanded = isOpen || isExpandedByUrl;
+  const isExpanded = isOpen || (isExpandedByUrl && !isUrlDismissed);
 
   useEffect(() => {
-    if (isExpandedByUrl) setIsOpen(true);
-  }, [isExpandedByUrl]);
+    if (isExpandedByUrl && !isUrlDismissed) {
+      setIsOpen(true);
+    }
+
+    if (!isExpandedByUrl) {
+      setIsUrlDismissed(false);
+    }
+  }, [isExpandedByUrl, isUrlDismissed]);
 
   useEffect(() => {
     if (!isExpanded || detail) return;
@@ -174,6 +270,7 @@ export function PostCard({
   function closeDetail() {
     setIsOpen(false);
     if (isExpandedByUrl) {
+      setIsUrlDismissed(true);
       const params = new URLSearchParams(searchParams.toString());
       params.delete("post");
       const query = params.toString();
@@ -193,14 +290,55 @@ export function PostCard({
     { label: "ペニスの長さ", value: penisLength != null ? `${penisLength}cm` : null },
   ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
+  const headerMetaItems = [
+    { label: "性別", value: gender },
+    { label: "年齢", value: getAgeLabel(age) },
+    { label: "ステータス", value: status },
+  ].filter((item): item is { label: string; value: string } => Boolean(item.value));
+
+  const profileHighlightItems = profileItems.filter((item) =>
+    ["年齢", "居住エリア", "MBTI", "年収"].includes(item.label)
+  );
+  const profileTagItems = profileItems.filter(
+    (item) => !["年齢", "居住エリア", "MBTI", "年収"].includes(item.label)
+  );
+
   const romanceItems = [
+    {
+      label: "初体験の年齢",
+      value: detail?.first_experience_age != null ? `${detail.first_experience_age}歳` : null,
+    },
+    {
+      label: "付き合った人数",
+      value: detail?.relationship_count != null ? `${detail.relationship_count}人` : null,
+    },
     {
       label: "経験人数",
       value: detail?.experience_count != null ? `${detail.experience_count}人` : null,
     },
     {
-      label: "セックス頻度",
-      value: detail?.sex_frequency != null ? `${detail.sex_frequency}回` : null,
+      label: "セックス回数（実態）",
+      value: detail?.sex_frequency != null ? `${detail.sex_frequency}回/週` : null,
+    },
+    {
+      label: "セックス回数（理想）",
+      value: detail?.ideal_sex_frequency != null ? `${detail.ideal_sex_frequency}回/週` : null,
+    },
+    {
+      label: "オナニー回数",
+      value: detail?.masturbation_frequency != null ? `${detail.masturbation_frequency}回/週` : null,
+    },
+    {
+      label: "セックス時間（実態）",
+      value: detail?.sex_duration != null ? `${detail.sex_duration}分` : null,
+    },
+    {
+      label: "セックス時間（理想）",
+      value: detail?.ideal_sex_duration != null ? `${detail.ideal_sex_duration}分` : null,
+    },
+    {
+      label: "満足度（0〜100）",
+      value: detail?.sex_satisfaction != null ? String(detail.sex_satisfaction) : null,
     },
   ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
@@ -214,12 +352,20 @@ export function PostCard({
       value: detail?.housewife_preference != null ? (ratingOptions.housewifePreference[detail.housewife_preference - 1] as string | undefined) ?? null : null,
     },
     {
-      label: "子ども希望",
+      label: "子供の人数願望",
       value: detail?.desired_children != null ? (ratingOptions.desiredChildren[detail.desired_children - 1] as string | undefined) ?? null : null,
+    },
+    {
+      label: "どこからが浮気か",
+      value: detail?.cheating_definition != null ? (ratingOptions.cheatingDefinition[detail.cheating_definition - 1] as string | undefined) ?? null : null,
     },
     {
       label: "浮気願望",
       value: detail?.cheating_desire != null ? (ratingOptions.cheatingDesire[detail.cheating_desire - 1] as string | undefined) ?? null : null,
+    },
+    {
+      label: "浮気されたらどうするか",
+      value: detail?.reaction_to_cheating != null ? (ratingOptions.reactionToCheating[detail.reaction_to_cheating - 1] as string | undefined) ?? null : null,
     },
   ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
@@ -254,8 +400,9 @@ export function PostCard({
     <>
       <Card className="rounded-[2rem] border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
         <CardContent className="p-4 sm:p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-3">
               {avatarId ? (
                 <AvatarIllustration id={avatarId} size={44} />
               ) : (
@@ -263,26 +410,35 @@ export function PostCard({
                   {displayName[0]}
                 </div>
               )}
-              <div>
-                <p className="font-semibold text-slate-900">{displayName}</p>
-                <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span>{gender}</span>
-                  <span>{status}</span>
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] font-semibold text-slate-900">{displayName}</p>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {headerMetaItems.map((item) => (
+                      <span
+                        key={item.label}
+                        className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700"
+                      >
+                        {item.value}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-            {formattedDate ? <p className="text-xs text-slate-500">{formattedDate}</p> : null}
+            {formattedDate ? (
+              <p className="shrink-0 pt-0.5 text-[11px] leading-4 text-slate-500">{formattedDate}</p>
+            ) : null}
           </div>
 
-          <div className="mt-4">
-            <InfoGrid title="プロフィール" items={profileItems} />
+          <div className="mt-3">
+            <CompactProfileSummary highlights={[]} tags={profileItems} cardStyle />
           </div>
 
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-2xl bg-slate-900 px-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               詳細を見る
               <ChevronRight className="size-4" />
@@ -290,10 +446,10 @@ export function PostCard({
             <button
               type="button"
               onClick={handleCopyShareUrl}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-slate-100 px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-2xl bg-slate-100 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
             >
               <Share2 className="size-4" />
-              共有URLをコピー
+              URLコピー
             </button>
           </div>
         </CardContent>
@@ -305,10 +461,10 @@ export function PostCard({
             className="mx-auto flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:px-5">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-4 py-3 sm:px-5">
               <div>
                 <p className="text-sm font-medium text-slate-500">投稿詳細</p>
-                <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                <h2 className="mt-1 text-base font-semibold text-slate-900 sm:text-lg">
                   {detail?.title || "投稿タイトル"}
                 </h2>
               </div>
@@ -322,8 +478,13 @@ export function PostCard({
               </button>
             </div>
 
-            <div className="space-y-4 overflow-y-auto p-4 sm:p-5">
-              <InfoGrid title="プロフィール" items={profileItems} className="border-sky-100 bg-sky-50/60" />
+            <div className="space-y-3 overflow-y-auto p-4 sm:p-5">
+              <CompactProfileSummary
+                highlights={[]}
+                tags={profileItems}
+                compact
+                valueOnly
+              />
 
               {detailLoading ? (
                 <div className="rounded-[1.25rem] border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
@@ -335,9 +496,19 @@ export function PostCard({
                 </div>
               ) : (
                 <>
-                  <InfoGrid title="恋愛・性データ" items={romanceItems} className="border-rose-100 bg-rose-50/60" />
-                  <InfoGrid title="価値観" items={valueItems} className="border-amber-100 bg-amber-50/60" />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <InfoGrid title="恋愛・性データ" items={romanceItems} className="border-rose-100 bg-rose-50/60" />
+                    <InfoGrid title="価値観" items={valueItems} className="border-amber-100 bg-amber-50/60" />
+                  </div>
                   <InfoGrid title="経験" items={experienceItems} className="border-emerald-100 bg-emerald-50/60" />
+                  {detail?.sex_satisfaction_note ? (
+                    <section className="rounded-[1.25rem] border border-rose-100 bg-rose-50/60 p-4">
+                      <p className="mb-3 text-xs font-semibold tracking-[0.14em] text-slate-500">点数の理由</p>
+                      <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                        {detail.sex_satisfaction_note}
+                      </p>
+                    </section>
+                  ) : null}
                   <section className="rounded-[1.25rem] border border-slate-200 bg-slate-100/70 p-4">
                     <p className="mb-3 text-xs font-semibold tracking-[0.14em] text-slate-500">本文</p>
                     <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">

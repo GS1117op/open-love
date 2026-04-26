@@ -16,7 +16,7 @@ export default function DataGraphsPage() {
             気になる傾向をグラフで比べる
           </h1>
           <p className="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
-            用意済みの見やすいグラフを見ることも、条件を自由に組み合わせて深掘りすることもできます。
+            基礎の見やすいグラフを見ることも、条件を自由に組み合わせて深掘りすることもできます。
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export default function DataGraphsPage() {
 
               <div className="mt-6 flex-1">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                  用意済みグラフ
+                  基礎グラフ
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
                   年齢、ステータス、男女差など、見たい切り口をすぐ確認できるグラフをまとめています。
@@ -43,7 +43,7 @@ export default function DataGraphsPage() {
 
               <Button asChild className="mt-6 h-12 w-full justify-between rounded-2xl">
                 <Link href="/data-graphs/charts">
-                  用意済みグラフを見る
+                  基礎グラフを見る
                   <ChevronRight className="size-4" />
                 </Link>
               </Button>

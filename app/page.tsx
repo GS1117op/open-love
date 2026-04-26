@@ -154,7 +154,7 @@ export default function Home() {
                   className="h-12 justify-between rounded-2xl border-emerald-200 bg-white text-emerald-800 shadow-sm hover:border-emerald-300 hover:bg-emerald-50"
                 >
                   <Link href="/data-graphs/charts">
-                    用意済みグラフ
+                    基礎グラフ
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
