@@ -20,6 +20,33 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in your project values.
+
+Public browser values:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Server-side only values:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `ADMIN_DASHBOARD_PASSWORD`
+
+Do not put `SUPABASE_SERVICE_ROLE_KEY` in a `NEXT_PUBLIC_` variable.
+
+## Supabase RLS
+
+Anonymous users are expected to read public `posts` data and submit `posts`, `subscribers`, and `feedbacks`.
+
+- `subscribers` should be insert-only for `anon` / `authenticated`
+- `feedbacks` should be insert-only for `anon` / `authenticated`
+- `subscribers` and `feedbacks` should not allow anonymous `select`, `update`, or `delete`
+
+Apply the SQL migrations in `supabase/migrations/` to keep these rules versioned in the repo.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

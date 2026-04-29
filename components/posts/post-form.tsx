@@ -364,7 +364,6 @@ export function PostForm() {
 
   const [education, setEducation] = useState("");
   const [income, setIncome] = useState("");
-  const [occupation, setOccupation] = useState("");
 
   const [cohabitationExperience, setCohabitationExperience] = useState("");
   const [datingAppExperience, setDatingAppExperience] = useState("");
@@ -462,7 +461,6 @@ const [cheatedLevel, setCheatedLevel] = useState("");
       avatar_id: avatarId || null,
       education: education || null,
       income: income ? Number(income) : null,
-      occupation: occupation || null,
 
       cup_size: gender === "女性" ? cupSize || null : null,
       penis_length:
@@ -539,7 +537,6 @@ cheated_level: cheatedLevel ? Number(cheatedLevel) : null,
     setAvatarId("");
     setEducation("");
     setIncome("");
-    setOccupation("");
 
     setCohabitationExperience("");
 setDatingAppExperience("");
