@@ -184,28 +184,31 @@ function MultiSelectDropdown({
 
   return (
     <div className="space-y-1.5">
-      <p className="text-sm font-medium text-slate-700">{label}</p>
+      <p className="text-sm font-medium" style={{ color: "#e0d0f0" }}>{label}</p>
       <div className="relative" ref={ref}>
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 text-sm"
+          className="flex h-10 w-full items-center justify-between rounded-xl border px-3 text-sm"
+          style={{ background: "rgba(42,17,69,0.85)", borderColor: "rgba(255,77,141,0.25)", color: count > 0 ? "#f0e6ff" : "#8070a0" }}
         >
-          <span className={count > 0 ? "text-slate-900 font-medium" : "text-slate-400"}>
+          <span style={{ fontWeight: count > 0 ? 500 : undefined }}>
             {displayText}
           </span>
           <ChevronDown
-            className={`size-4 text-slate-400 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+            className={`size-4 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+            style={{ color: "#8070a0" }}
           />
         </button>
 
         {open && (
-          <div className="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+          <div className="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border shadow-lg" style={{ background: "#1e0d38", borderColor: "rgba(255,77,141,0.25)" }}>
             {count > 0 && (
               <button
                 type="button"
                 onClick={() => { onClear(); setOpen(false); }}
-                className="w-full border-b border-slate-100 px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-700"
+                className="w-full border-b px-3 py-2 text-left text-xs transition hover:opacity-80"
+                style={{ borderColor: "rgba(255,77,141,0.15)", color: "#b09fc8" }}
               >
                 クリア
               </button>
@@ -217,15 +220,16 @@ function MultiSelectDropdown({
               return (
                 <label
                   key={val}
-                  className="flex cursor-pointer items-center gap-2.5 px-3 py-2.5 text-sm hover:bg-slate-50"
+                  className="flex cursor-pointer items-center gap-2.5 px-3 py-2.5 text-sm transition hover:bg-white/5"
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => onToggle(val)}
-                    className="size-4 rounded border-slate-300 accent-slate-800"
+                    className="size-4 rounded"
+                    style={{ accentColor: "#ff4d8d" }}
                   />
-                  <span className={checked ? "text-slate-900 font-medium" : "text-slate-700"}>
+                  <span style={{ color: checked ? "#f0e6ff" : "#b09fc8", fontWeight: checked ? 500 : undefined }}>
                     {lbl}
                   </span>
                 </label>
@@ -273,20 +277,20 @@ function RangeSlider({
     <div className="space-y-2">
       {/* Label + current range */}
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-700">{label}</p>
-        <span className={`text-sm ${hasFilter ? "font-medium text-slate-900" : "text-slate-400"}`}>
+        <p className="text-sm font-medium" style={{ color: "#e0d0f0" }}>{label}</p>
+        <span className="text-sm" style={{ color: hasFilter ? "#f0e6ff" : "#8070a0", fontWeight: hasFilter ? 500 : undefined }}>
           {hasFilter ? `${fmt(curMin)} 〜 ${fmt(curMax, true)}` : "指定なし"}
         </span>
       </div>
 
       {/* Single track with two thumbs */}
       <div className="relative flex h-7 items-center">
-        {/* Gray background track */}
-        <div className="absolute left-0 right-0 h-1.5 rounded-full bg-slate-200" />
+        {/* Background track */}
+        <div className="absolute left-0 right-0 h-1.5 rounded-full" style={{ background: "rgba(255,77,141,0.15)" }} />
         {/* Colored fill between thumbs */}
         <div
-          className="absolute h-1.5 rounded-full bg-slate-800"
-          style={{ left: `${minPct}%`, right: `${100 - maxPct}%` }}
+          className="absolute h-1.5 rounded-full"
+          style={{ left: `${minPct}%`, right: `${100 - maxPct}%`, background: "linear-gradient(90deg, #ff4d8d, #9b2dd6)" }}
         />
         {/* Min thumb — moves on top when pushed far right */}
         <input
@@ -319,7 +323,7 @@ function RangeSlider({
       </div>
 
       {/* Scale endpoints */}
-      <div className="flex justify-between text-xs text-slate-400">
+      <div className="flex justify-between text-xs" style={{ color: "#8070a0" }}>
         <span>{rangeMin}{unit}</span>
         <span>{rangeMax}{unit}</span>
       </div>
@@ -329,10 +333,10 @@ function RangeSlider({
 
 // ─── Section wrapper ─────────────────────────────────────────────────��────────
 
-function FilterSection({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+function FilterSection({ title, children }: { title: string; className?: string; children: React.ReactNode }) {
   return (
-    <div className={`space-y-4 rounded-xl border p-4 ${className ?? "border-slate-200 bg-slate-50/60"}`}>
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</p>
+    <div className="space-y-4 rounded-xl border p-4" style={{ background: "rgba(26,10,46,0.5)", borderColor: "rgba(255,77,141,0.18)" }}>
+      <p className="text-xs font-semibold uppercase tracking-[0.14em]" style={{ color: "#b09fc8" }}>{title}</p>
       <div className="space-y-4">{children}</div>
     </div>
   );
@@ -366,7 +370,7 @@ export function PostFilter({
   });
 
   return (
-    <div className="rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-[1.5rem] border" style={{ background: "rgba(42,17,69,0.7)", borderColor: "rgba(255,77,141,0.2)" }}>
       {/* Header */}
       <button
         type="button"
@@ -374,30 +378,32 @@ export function PostFilter({
         className="flex w-full items-center justify-between px-5 py-4"
       >
         <div className="flex items-center gap-3">
-          <SlidersHorizontal className="size-4 text-slate-600" />
-          <span className="text-sm font-semibold text-slate-800">絞り込み</span>
+          <SlidersHorizontal className="size-4" style={{ color: "#b09fc8" }} />
+          <span className="text-sm font-semibold" style={{ color: "#f0e6ff" }}>絞り込み</span>
           {activeFilterCount > 0 && (
-            <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-xs font-medium text-white">
+            <span className="rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ background: "linear-gradient(135deg,#ff4d8d,#9b2dd6)", color: "#fff" }}>
               {activeFilterCount}
             </span>
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-500">{resultCount} / {totalCount} 件</span>
+          <span className="text-xs" style={{ color: "#b09fc8" }}>{resultCount} / {totalCount} 件</span>
           <ChevronDown
-            className={`size-4 text-slate-500 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+            className={`size-4 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+            style={{ color: "#b09fc8" }}
           />
         </div>
       </button>
 
       {/* Body */}
       {open && (
-        <div className="space-y-8 border-t border-slate-100 px-5 py-5">
+        <div className="space-y-8 border-t px-5 py-5" style={{ borderColor: "rgba(255,77,141,0.15)" }}>
           {activeFilterCount > 0 && (
             <button
               type="button"
               onClick={onReset}
-              className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-800"
+              className="flex items-center gap-1.5 text-sm transition hover:opacity-80"
+              style={{ color: "#b09fc8" }}
             >
               <RotateCcw className="size-3.5" />
               すべてリセット
@@ -405,15 +411,15 @@ export function PostFilter({
           )}
 
           {/* 基本情報 */}
-          <FilterSection title="基本情報" className="border-sky-100 bg-sky-50/60">
+          <FilterSection title="基本情報">
             <div className="space-y-1.5">
-              <p className="text-sm font-medium text-slate-700">ニックネーム</p>
+              <p className="text-sm font-medium" style={{ color: "#e0d0f0" }}>ニックネーム</p>
               <input
                 type="text"
                 value={filters.nickname}
                 onChange={(e) => onTextChange("nickname", e.target.value)}
                 placeholder="部分一致で検索"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                className="h-10 w-full rounded-xl border px-3 text-sm"
               />
             </div>
             <MultiSelectDropdown label="性別" options={genderOptions} {...sel("gender")} />
@@ -434,7 +440,7 @@ export function PostFilter({
           </FilterSection>
 
           {/* 恋愛・セックスデータ */}
-          <FilterSection title="恋愛・セックスデータ" className="border-rose-100 bg-rose-50/60">
+          <FilterSection title="恋愛・セックスデータ">
             <RangeSlider label="初体験の年齢" rangeMin={10} rangeMax={40} step={1} unit="歳" {...rng("firstExperienceAge")} />
             <RangeSlider label="付き合った人数" rangeMin={0} rangeMax={30} step={1} unit="人" {...rng("relationshipCount")} />
             <RangeSlider label="経験人数" rangeMin={0} rangeMax={50} step={1} unit="人" {...rng("experienceCount")} />
@@ -445,19 +451,19 @@ export function PostFilter({
             <RangeSlider label="1回の時間（理想）" rangeMin={0} rangeMax={120} step={5} unit="分" {...rng("idealSexDuration")} />
             <RangeSlider label="セックスライフ満足度" rangeMin={0} rangeMax={100} step={5} unit="" {...rng("sexSatisfaction")} />
             <div className="space-y-1.5">
-              <p className="text-sm font-medium text-slate-700">満足度の理由（キーワード）</p>
+              <p className="text-sm font-medium" style={{ color: "#e0d0f0" }}>満足度の理由（キーワード）</p>
               <input
                 type="text"
                 value={filters.sexSatisfactionNote}
                 onChange={(e) => onTextChange("sexSatisfactionNote", e.target.value)}
                 placeholder="部分一致で検索"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                className="h-10 w-full rounded-xl border px-3 text-sm"
               />
             </div>
           </FilterSection>
 
           {/* 価値観 */}
-          <FilterSection title="価値観" className="border-amber-100 bg-amber-50/60">
+          <FilterSection title="価値観">
             <MultiSelectDropdown label="結婚願望" options={toRatingOptions(ratingOptions.marriageIntent)} {...sel("marriageIntent")} />
             <MultiSelectDropdown label="専業主婦希望" options={toRatingOptions(ratingOptions.housewifePreference)} {...sel("housewifePreference")} />
             <MultiSelectDropdown label="子供の人数願望" options={toRatingOptions(ratingOptions.desiredChildren)} {...sel("desiredChildren")} />
@@ -467,7 +473,7 @@ export function PostFilter({
           </FilterSection>
 
           {/* 経験 */}
-          <FilterSection title="経験" className="border-emerald-100 bg-emerald-50/60">
+          <FilterSection title="経験">
             <MultiSelectDropdown label="同棲経験" options={toRatingOptions(experienceOptions.cohabitation)} {...sel("cohabitationLevel")} />
             <MultiSelectDropdown label="マチアプ経験" options={toRatingOptions(experienceOptions.datingApp)} {...sel("datingAppLevel")} />
             <MultiSelectDropdown label="ゴムなしの経験" options={toRatingOptions(experienceOptions.noCondom)} {...sel("noCondomLevel")} />
@@ -479,23 +485,23 @@ export function PostFilter({
           {/* 投稿内容 */}
           <FilterSection title="投稿内容">
             <div className="space-y-1.5">
-              <p className="text-sm font-medium text-slate-700">タイトル</p>
+              <p className="text-sm font-medium" style={{ color: "#e0d0f0" }}>タイトル</p>
               <input
                 type="text"
                 value={filters.title}
                 onChange={(e) => onTextChange("title", e.target.value)}
                 placeholder="部分一致で検索"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                className="h-10 w-full rounded-xl border px-3 text-sm"
               />
             </div>
             <div className="space-y-1.5">
-              <p className="text-sm font-medium text-slate-700">投稿内容</p>
+              <p className="text-sm font-medium" style={{ color: "#e0d0f0" }}>投稿内容</p>
               <input
                 type="text"
                 value={filters.content}
                 onChange={(e) => onTextChange("content", e.target.value)}
                 placeholder="部分一致で検索"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                className="h-10 w-full rounded-xl border px-3 text-sm"
               />
             </div>
           </FilterSection>

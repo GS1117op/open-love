@@ -11,7 +11,7 @@ export function AdminLoginForm() {
   return (
     <form action={action} className="space-y-4">
       <div className="space-y-2">
-        <label htmlFor="password" className="text-sm font-medium text-slate-800">
+        <label htmlFor="password" className="text-sm font-medium" style={{ color: "#e0d0f0" }}>
           管理パスコード
         </label>
         <input
@@ -19,13 +19,16 @@ export function AdminLoginForm() {
           name="password"
           type="password"
           required
-          className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+          className="flex h-11 w-full rounded-xl px-3 py-2 text-sm"
           placeholder="パスコードを入力"
         />
       </div>
 
       {state.message ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <div
+          className="rounded-xl border px-4 py-3 text-sm"
+          style={{ borderColor: "rgba(255, 77, 141, 0.25)", background: "rgba(255, 77, 141, 0.08)", color: "#ff8cc8" }}
+        >
           {state.message}
         </div>
       ) : null}
@@ -33,7 +36,7 @@ export function AdminLoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="flex h-11 w-full items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn-gradient flex h-11 w-full items-center justify-center rounded-xl px-4 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? "確認中..." : "管理画面に入る"}
       </button>

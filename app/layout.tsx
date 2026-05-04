@@ -1,17 +1,28 @@
 import type { Metadata } from "next";
+import { Noto_Sans_JP, Zen_Kaku_Gothic_New } from "next/font/google";
 import { AffiliateBanner } from "@/components/layout/affiliate-banner";
 import { FeedbackCta } from "@/components/layout/feedback-cta";
 import "./globals.css";
+
+const notoSansJp = Noto_Sans_JP({
+  variable: "--font-sans",
+  weight: ["400", "500", "700"],
+});
+
+const zenKakuGothicNew = Zen_Kaku_Gothic_New({
+  variable: "--font-heading",
+  weight: ["400", "500", "700"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://open-love-sepia.vercel.app"),
 
   title: "OpenLove",
-  description: "恋愛・結婚・性に関するリアルデータを共有するプラットフォーム",
+  description: "諱区・繝ｻ邨仙ｩ壹・諤ｧ縺ｫ髢｢縺吶ｋ繝ｪ繧｢繝ｫ繝・・繧ｿ繧貞・譛峨☆繧九・繝ｩ繝・ヨ繝輔か繝ｼ繝",
 
   openGraph: {
     title: "OpenLove",
-    description: "恋愛・結婚・性に関するリアルデータを共有するプラットフォーム",
+    description: "諱区・繝ｻ邨仙ｩ壹・諤ｧ縺ｫ髢｢縺吶ｋ繝ｪ繧｢繝ｫ繝・・繧ｿ繧貞・譛峨☆繧九・繝ｩ繝・ヨ繝輔か繝ｼ繝",
     url: "https://open-love-sepia.vercel.app/",
     siteName: "OpenLove",
     images: [
@@ -29,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "OpenLove",
-    description: "恋愛・結婚・性に関するリアルデータを共有するプラットフォーム",
+    description: "諱区・繝ｻ邨仙ｩ壹・諤ｧ縺ｫ髢｢縺吶ｋ繝ｪ繧｢繝ｫ繝・・繧ｿ繧貞・譛峨☆繧九・繝ｩ繝・ヨ繝輔か繝ｼ繝",
     images: ["/og-image.png"],
   },
 };
@@ -42,11 +53,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full antialiased"
+      className={`${notoSansJp.variable} ${zenKakuGothicNew.variable} h-full antialiased`}
       style={
         {
-          "--font-sans":
-            '"Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif',
           "--font-geist-mono":
             '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
         } as React.CSSProperties

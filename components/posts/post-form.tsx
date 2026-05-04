@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   AvatarIllustration,
@@ -276,7 +274,6 @@ const experienceOptions = {
 function FormSection({
   title,
   description,
-  className,
   children,
 }: {
   title: string;
@@ -285,11 +282,11 @@ function FormSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className={`space-y-4 rounded-[1.5rem] border p-4 sm:p-5 ${className ?? "border-slate-200 bg-slate-50/60"}`}>
+    <section className="space-y-4 rounded-[1.5rem] border p-4 sm:p-5" style={{ background: "rgba(26,10,46,0.5)", borderColor: "rgba(255,77,141,0.2)" }}>
       <div>
-        <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+        <h2 className="text-base font-semibold" style={{ color: "#f0e6ff" }}>{title}</h2>
         {description ? (
-          <p className="mt-1 text-sm text-slate-600">{description}</p>
+          <p className="mt-1 text-sm" style={{ color: "#b09fc8" }}>{description}</p>
         ) : null}
       </div>
       <div className="space-y-4">{children}</div>
@@ -310,11 +307,11 @@ function RatingSelect({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
+      <label className="text-sm font-medium" style={{ color: "#e0d0f0" }}>{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+        className="flex h-11 w-full rounded-xl border px-3 py-2 text-sm"
       >
         <option value="">未選択</option>
         {options.map((option, index) => (
@@ -385,8 +382,8 @@ const [cheatedLevel, setCheatedLevel] = useState("");
   const [message, setMessage] = useState("");
 
   const stackedFieldClass = "flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3";
-  const basicLabelClass = "text-sm font-medium text-slate-700 sm:w-28 sm:shrink-0";
-  const detailLabelClass = "text-sm font-medium text-slate-700 sm:w-48 sm:shrink-0";
+  const basicLabelClass = "text-sm font-medium sm:w-28 sm:shrink-0";
+  const detailLabelClass = "text-sm font-medium sm:w-48 sm:shrink-0";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -559,14 +556,13 @@ setCheatedLevel("");
   }
 
   return (
-    <Card className="rounded-[2rem] border-slate-200 bg-white shadow-sm">
-      <CardContent className="p-4 sm:p-8">
+    <div className="rounded-[2rem] border p-4 sm:p-8" style={{ background: "rgba(42,17,69,0.7)", borderColor: "rgba(255,77,141,0.2)", backdropFilter: "blur(8px)" }}>
         <div className="mb-6">
-          <p className="text-sm font-medium text-slate-600">匿名投稿フォーム</p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+          <p className="text-sm font-medium" style={{ color: "#ff4d8d" }}>匿名投稿フォーム</p>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: "#f0e6ff" }}>
             恋愛・結婚・セックスのデータを投稿する
           </h1>
-          <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+          <p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: "#b09fc8" }}>
             基本情報を入力して保存できます。メールアドレスは公開されません。
           </p>
         </div>
@@ -575,7 +571,6 @@ setCheatedLevel("");
           <FormSection
             title="基本情報"
             description="まずは公開される基本情報を入力してください。"
-            className="border-sky-100 bg-sky-50/60"
           >
             <div className="space-y-3">
               <div className={stackedFieldClass}>
@@ -793,7 +788,7 @@ setCheatedLevel("");
               ) : null}
 
               <div className="flex items-start gap-3">
-                <span className="w-28 shrink-0 pt-1 text-sm font-medium text-slate-700">
+                <span className="w-28 shrink-0 pt-1 text-sm font-medium" style={{ color: "#e0d0f0" }}>
                   アバター
                 </span>
                 <div>
@@ -811,7 +806,7 @@ setCheatedLevel("");
                         onClick={() => setAvatarId(id === avatarId ? "" : id)}
                         className={`rounded-full transition-all ${
                           avatarId === id
-                            ? "ring-2 ring-slate-800 ring-offset-2"
+                            ? "ring-2 ring-pink-400 ring-offset-2 ring-offset-transparent"
                             : "opacity-70 hover:opacity-100"
                         }`}
                       >
@@ -819,7 +814,7 @@ setCheatedLevel("");
                       </button>
                     ))}
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs" style={{ color: "#8070a0" }}>
                     自分に近いイラストを選んでください（もう一度押すと解除）。
                   </p>
                 </div>
@@ -830,7 +825,6 @@ setCheatedLevel("");
           <FormSection
             title="恋愛・セックスデータ"
             description="任意で詳細なデータを入力できます。"
-            className="border-rose-100 bg-rose-50/60"
           >
             <div className="space-y-3">
               <div className={stackedFieldClass}>
@@ -1012,11 +1006,10 @@ setCheatedLevel("");
           <FormSection
             title="価値観"
             description="結婚や不貞行為に関する価値観を選択してください。"
-            className="border-amber-100 bg-amber-50/60"
           >
             <div className="space-y-6">
               <div>
-                <h3 className="mb-3 text-sm font-semibold text-slate-800">
+                <h3 className="mb-3 text-sm font-semibold" style={{ color: "#e0d0f0" }}>
                   結婚
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1042,7 +1035,7 @@ setCheatedLevel("");
               </div>
 
               <div>
-                <h3 className="mb-3 text-sm font-semibold text-slate-800">
+                <h3 className="mb-3 text-sm font-semibold" style={{ color: "#e0d0f0" }}>
                   不貞行為
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1072,7 +1065,6 @@ setCheatedLevel("");
           <FormSection
   title="経験"
   description="これまでの経験について選択してください。"
-  className="border-emerald-100 bg-emerald-50/60"
 >
   <div className="space-y-6">
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1159,13 +1151,13 @@ setCheatedLevel("");
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs" style={{ color: "#8070a0" }}>
                 メールアドレスは公開されません。
               </p>
             </div>
 
-            <div className="rounded-[1.25rem] border border-slate-200 bg-white p-4">
-              <label className="flex items-start gap-3 text-sm text-slate-700">
+            <div className="rounded-[1.25rem] border p-4" style={{ background: "rgba(26,10,46,0.5)", borderColor: "rgba(255,77,141,0.18)" }}>
+              <label className="flex items-start gap-3 text-sm" style={{ color: "#e0d0f0" }}>
                 <input
                   type="checkbox"
                   checked={consent}
@@ -1180,29 +1172,32 @@ setCheatedLevel("");
           </FormSection>
 
           {message ? (
-            <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            <div className="rounded-[1.25rem] border p-4 text-sm" style={{ background: "rgba(42,17,69,0.6)", borderColor: "rgba(255,77,141,0.25)", color: "#e0d0f0" }}>
               <p>{message}</p>
 
               {message === "投稿を保存しました。" ? (
                 <div className="mt-3">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href="/posts">投稿一覧を見る</Link>
-                  </Button>
+                  <Link
+                    href="/posts"
+                    className="inline-block rounded-full border px-4 py-2 text-sm font-medium transition hover:opacity-80"
+                    style={{ borderColor: "rgba(255,77,141,0.3)", color: "#e0d0f0" }}
+                  >
+                    投稿一覧を見る
+                  </Link>
                 </div>
               ) : null}
             </div>
           ) : null}
 
-          <Button
+          <button
             type="submit"
-            className="w-full sm:w-auto"
+            className="btn-gradient rounded-full px-8 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isSubmitting}
           >
             {isSubmitting ? "保存中..." : "投稿する"}
-          </Button>
+          </button>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
 

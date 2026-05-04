@@ -1279,16 +1279,17 @@ function RangeSlider({
 
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between px-0.5 text-[11px] text-slate-500">
+      <div className="flex items-center justify-between px-0.5 text-[11px]" style={{ color: "#8070a0" }}>
         <span>{value.min ? `${value.min}${unit}` : "下限なし"}</span>
         <span>~</span>
         <span>{value.max ? `${value.max}${unit}` : "上限なし"}</span>
       </div>
       <div className="relative h-10 px-1">
-        <div className="absolute inset-x-1 top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200/70" />
+        <div className="absolute inset-x-1 top-1/2 h-1 -translate-y-1/2 rounded-full" style={{ background: "rgba(255,77,141,0.15)" }} />
         <div
-          className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-400"
+          className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full"
           style={{
+            background: "linear-gradient(90deg,#ff4d8d,#9b2dd6)",
             left: `calc(${leftPercent}% + 0.25rem)`,
             width: `calc(${Math.max(rightPercent - leftPercent, 0)}% - 0.5rem)`,
           }}
@@ -1330,7 +1331,7 @@ function RangeSlider({
             const nextValue = Math.min(Number(event.target.value), currentMax);
             onChange("min", String(nextValue));
           }}
-          className="pointer-events-none absolute inset-x-0 top-1/2 h-0 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-none [&::-webkit-slider-thumb]:mt-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-500 [&::-moz-range-thumb]:bg-white"
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-0 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-none [&::-webkit-slider-thumb]:mt-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-pink-400 [&::-webkit-slider-thumb]:bg-[#2a1145] [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-pink-400 [&::-moz-range-thumb]:bg-[#2a1145]"
         />
         <input
           type="range"
@@ -1345,7 +1346,7 @@ function RangeSlider({
             const nextValue = Math.max(Number(event.target.value), currentMin);
             onChange("max", String(nextValue));
           }}
-          className="pointer-events-none absolute inset-x-0 top-1/2 h-0 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-none [&::-webkit-slider-thumb]:mt-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-500 [&::-moz-range-thumb]:bg-white"
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-0 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-none [&::-webkit-slider-thumb]:mt-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-pink-400 [&::-webkit-slider-thumb]:bg-[#2a1145] [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-pink-400 [&::-moz-range-thumb]:bg-[#2a1145]"
         />
       </div>
     </div>
@@ -1398,28 +1399,27 @@ function MultiSelectDropdown({
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="flex h-9 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+        className="flex h-9 w-full items-center justify-between rounded-md border px-3 py-2 text-sm"
+        style={{ background: "rgba(42,17,69,0.85)", borderColor: "rgba(255,77,141,0.25)", color: "#e0d0f0" }}
       >
         <span className="truncate">{summary}</span>
-        <span className={cn("ml-2 shrink-0 text-slate-400 transition", isOpen && "rotate-180")}>
+        <span className={cn("ml-2 shrink-0 transition", isOpen && "rotate-180")} style={{ color: "#8070a0" }}>
           ▼
         </span>
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 right-0 z-20 mt-1 max-h-48 space-y-1 overflow-y-auto rounded-md border border-slate-200 bg-white p-2 shadow-sm">
+        <div className="absolute left-0 right-0 z-20 mt-1 max-h-48 space-y-1 overflow-y-auto rounded-md border p-2 shadow-sm" style={{ background: "#1e0d38", borderColor: "rgba(255,77,141,0.25)" }}>
           <button
             type="button"
             onClick={() => {
               onClear();
               setIsOpen(false);
             }}
-            className={cn(
-              "mb-1 w-full rounded-md border px-2 py-1 text-left text-xs transition",
-              selectedValues.length === 0
-                ? "border-slate-300 bg-slate-100 text-slate-900"
-                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-            )}
+            className="mb-1 w-full rounded-md border px-2 py-1 text-left text-xs transition hover:opacity-80"
+            style={selectedValues.length === 0
+              ? { borderColor: "rgba(255,77,141,0.4)", background: "rgba(255,77,141,0.15)", color: "#f0e6ff" }
+              : { borderColor: "rgba(255,77,141,0.2)", background: "transparent", color: "#b09fc8" }}
           >
             すべて
           </button>
@@ -1428,12 +1428,13 @@ function MultiSelectDropdown({
             const checked = selectedValues.includes(option.value);
 
             return (
-              <label key={option.value} className="flex items-start gap-2 text-xs text-slate-700">
+              <label key={option.value} className="flex items-start gap-2 text-xs" style={{ color: "#b09fc8" }}>
                 <input
                   type="checkbox"
                   checked={checked}
                   onChange={() => onToggle(option.value)}
                   className="mt-0.5"
+                  style={{ accentColor: "#ff4d8d" }}
                 />
                 <span>{option.label}</span>
               </label>
@@ -1867,20 +1868,20 @@ function CustomGraphBuilder({
     state.filters.length > 0;
 
   const selectClass =
-    "flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm";
+    "flex h-9 w-full rounded-md border px-3 py-2 text-sm";
   const addButtonClass =
-    "mt-1.5 text-xs font-medium text-slate-500 transition hover:text-slate-800";
+    "mt-1.5 text-xs font-medium transition hover:opacity-80";
   const removeButtonClass =
-    "shrink-0 self-center rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500";
+    "shrink-0 self-center rounded-md border px-2 py-1.5 text-xs transition hover:opacity-80";
 
   return (
-    <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+    <section className="space-y-4 rounded-xl border p-4" style={{ background: "rgba(42,17,69,0.7)", borderColor: "rgba(255,77,141,0.2)" }}>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold tracking-tight text-slate-900">
+          <h2 className="text-base font-semibold tracking-tight" style={{ color: "#f0e6ff" }}>
             {title}
           </h2>
-          <p className="mt-1 text-xs leading-5 text-slate-600">
+          <p className="mt-1 text-xs leading-5" style={{ color: "#b09fc8" }}>
             集計項目・フィルタ・グラフ形式を選んで自由に比較できます。
           </p>
         </div>
@@ -1888,7 +1889,8 @@ function CustomGraphBuilder({
           <button
             type="button"
             onClick={() => updateState(builderDefaultState)}
-            className="shrink-0 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+            className="shrink-0 rounded-md border px-3 py-1.5 text-xs font-medium transition hover:opacity-80"
+            style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#e0d0f0" }}
           >
             リセット
           </button>
@@ -1898,7 +1900,7 @@ function CustomGraphBuilder({
       <div className="grid gap-4 sm:grid-cols-3 sm:items-start">
         {/* 髮・ｨ磯・岼 */}
         <div className="space-y-1.5">
-          <span className="text-xs font-medium text-slate-700">集計項目</span>
+          <span className="text-xs font-medium" style={{ color: "#e0d0f0" }}>集計項目</span>
           <div className="space-y-2">
             {state.fields.map((fieldKey, i) => (
               <div key={i} className="flex gap-2">
@@ -1933,13 +1935,13 @@ function CustomGraphBuilder({
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-xs font-medium text-slate-700">フィルタ</span>
+          <span className="text-xs font-medium" style={{ color: "#e0d0f0" }}>フィルタ</span>
           <div className="space-y-2">
             {state.filters.map((filter, i) => {
               const config = findFilterFieldConfig(filter.field);
 
               return (
-                <div key={i} className="space-y-2 rounded-lg border border-slate-100 bg-slate-50/60 p-2">
+                <div key={i} className="space-y-2 rounded-lg border p-2" style={{ background: "rgba(26,10,46,0.5)", borderColor: "rgba(255,77,141,0.18)" }}>
                   <div className="flex gap-2">
                     <select
                       value={filter.field}
@@ -1994,7 +1996,7 @@ function CustomGraphBuilder({
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-xs font-medium text-slate-700">グラフ形式</span>
+          <span className="text-xs font-medium" style={{ color: "#e0d0f0" }}>グラフ形式</span>
           {state.fields.length === 2 ? (
             <select
               value={state.combo}
@@ -2020,7 +2022,7 @@ function CustomGraphBuilder({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+        <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: "rgba(255,77,141,0.12)", color: "#e0d0f0" }}>
           対象 {filteredPosts.length}件
         </span>
         {state.filters
@@ -2039,7 +2041,7 @@ function CustomGraphBuilder({
             return (
               <span
                 key={i}
-                className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700"
+                className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: "rgba(77,153,255,0.15)", color: "#99ccff" }}
               >
                 {config.label}: {valueLabel}
               </span>
@@ -2048,11 +2050,11 @@ function CustomGraphBuilder({
       </div>
 
       {selectedFields.length === 2 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <h3 className="mb-0.5 text-sm font-semibold text-slate-900">
+        <div className="rounded-xl border p-4" style={{ background: "rgba(26,10,46,0.6)", borderColor: "rgba(255,77,141,0.2)" }}>
+          <h3 className="mb-0.5 text-sm font-semibold" style={{ color: "#f0e6ff" }}>
             {selectedFields[0].label} × {selectedFields[1].label}
           </h3>
-          <p className="mb-4 text-xs text-slate-500">
+          <p className="mb-4 text-xs" style={{ color: "#8070a0" }}>
             {filteredPosts.length}件のデータを集計しています。
           </p>
           {state.combo === "scatter" ? (() => {
@@ -2105,15 +2107,15 @@ function CustomGraphBuilder({
                         | undefined;
                       if (!d) return null;
                       return (
-                        <div className="rounded border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
-                          <p className="text-slate-700">
+                        <div className="rounded border px-3 py-2 text-xs shadow-md" style={{ background: "#1e0d38", borderColor: "rgba(255,77,141,0.3)", color: "#e0d0f0" }}>
+                          <p>
                             {selectedFields[0].label}: <span className="font-medium">{d.label1}</span>
                           </p>
-                          <p className="text-slate-700">
+                          <p>
                             {selectedFields[1].label}: <span className="font-medium">{d.label2}</span>
                           </p>
-                          <p className="mt-1 text-slate-500">
-                            件数: <span className="font-semibold text-slate-900">{d.count}</span>
+                          <p className="mt-1" style={{ color: "#b09fc8" }}>
+                            件数: <span className="font-semibold" style={{ color: "#f0e6ff" }}>{d.count}</span>
                           </p>
                         </div>
                       );
@@ -2242,13 +2244,13 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
     element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  if (loading) return <p className="text-sm text-slate-500">グラフデータを読み込み中です...</p>;
-  if (errorMessage) return <p className="text-sm text-red-600">{errorMessage}</p>;
+  if (loading) return <p className="text-sm" style={{ color: "#b09fc8" }}>グラフデータを読み込み中です...</p>;
+  if (errorMessage) return <p className="text-sm text-red-400">{errorMessage}</p>;
   if (shouldShowPreset && !dashboardData) {
-    return <p className="text-sm text-slate-500">表示できるグラフデータがありません。</p>;
+    return <p className="text-sm" style={{ color: "#b09fc8" }}>表示できるグラフデータがありません。</p>;
   }
   if (shouldShowCustom && rawPosts.length === 0 && !shouldShowPreset) {
-    return <p className="text-sm text-slate-500">表示できるグラフデータがありません。</p>;
+    return <p className="text-sm" style={{ color: "#b09fc8" }}>表示できるグラフデータがありません。</p>;
   }
 
   const sections = dashboardData?.sections ?? [];
@@ -2275,12 +2277,12 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
 
       {shouldShowPreset ? (
         <>
-          <section className="rounded-xl border border-slate-200 bg-white p-4">
+          <section className="rounded-xl border p-4" style={{ background: "rgba(42,17,69,0.7)", borderColor: "rgba(255,77,141,0.2)" }}>
             <div>
-              <h2 className="text-base font-semibold tracking-tight text-slate-900">
+              <h2 className="text-base font-semibold tracking-tight" style={{ color: "#f0e6ff" }}>
                 グラフ目次
               </h2>
-              <p className="mt-1 text-xs leading-5 text-slate-600">
+              <p className="mt-1 text-xs leading-5" style={{ color: "#b09fc8" }}>
                 気になるグラフへすぐ移動できます。
               </p>
             </div>
@@ -2293,7 +2295,8 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
                       event.preventDefault();
                       handleJump(`section-${section.sectionKey}`);
                     }}
-                    className="inline-flex text-sm font-semibold text-slate-900 transition hover:text-slate-700"
+                    className="inline-flex text-sm font-semibold transition hover:opacity-80"
+                    style={{ color: "#f0e6ff" }}
                   >
                     {section.title}
                   </a>
@@ -2306,7 +2309,8 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
                           event.preventDefault();
                           handleJump(chart.id);
                         }}
-                        className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+                        className="rounded-full border px-3 py-1.5 text-xs font-medium transition hover:opacity-80"
+                        style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#e0d0f0" }}
                       >
                         {chart.title}
                       </a>
@@ -2319,17 +2323,17 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
 
           <section className="space-y-3">
             <div>
-              <h2 className="text-base font-semibold tracking-tight text-slate-900">
+              <h2 className="text-base font-semibold tracking-tight" style={{ color: "#f0e6ff" }}>
                 男女サマリー
               </h2>
-              <p className="mt-1 text-xs leading-5 text-slate-600">
+              <p className="mt-1 text-xs leading-5" style={{ color: "#b09fc8" }}>
                 男女別の投稿数と平均値をコンパクトに比較できます。
               </p>
             </div>
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div className="overflow-hidden rounded-xl border" style={{ background: "rgba(42,17,69,0.7)", borderColor: "rgba(255,77,141,0.2)" }}>
               <div className="overflow-x-auto">
-                <table className="min-w-full text-xs text-slate-700">
-                  <thead className="bg-slate-50 text-[11px] text-slate-500">
+                <table className="min-w-full text-xs" style={{ color: "#b09fc8" }}>
+                  <thead className="text-[11px]" style={{ background: "rgba(26,10,46,0.6)", color: "#8070a0" }}>
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">区分</th>
                       <th className="px-3 py-2 text-right font-semibold">投稿数</th>
@@ -2342,8 +2346,8 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
                   </thead>
                   <tbody>
                     {genderDashboards.map((dashboard) => (
-                      <tr key={dashboard.gender} className="border-t border-slate-200">
-                        <th className="whitespace-nowrap px-3 py-2 text-left text-sm font-semibold text-slate-900">
+                      <tr key={dashboard.gender} className="border-t" style={{ borderColor: "rgba(255,77,141,0.15)" }}>
+                        <th className="whitespace-nowrap px-3 py-2 text-left text-sm font-semibold" style={{ color: "#f0e6ff" }}>
                           {dashboard.gender}
                         </th>
                         <td className="whitespace-nowrap px-3 py-2 text-right">
@@ -2376,21 +2380,17 @@ export function PostGraphsDashboard(props: PostGraphsDashboardProps) {
             <section
               key={section.title}
               id={`section-${section.sectionKey}`}
-              className={cn(
-                "scroll-mt-24 space-y-3 rounded-xl border p-4",
-                getPostSectionPalette(section.sectionKey).containerClassName
-              )}
+              className="scroll-mt-24 space-y-3 rounded-xl border p-4"
+              style={getPostSectionPalette(section.sectionKey).containerStyle}
             >
               <div>
                 <div
-                  className={cn(
-                    "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-                    getPostSectionPalette(section.sectionKey).badgeClassName
-                  )}
+                  className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                  style={getPostSectionPalette(section.sectionKey).badgeStyle}
                 >
                   {section.title}
                 </div>
-                <p className="mt-1 text-xs leading-5 text-slate-600">{section.description}</p>
+                <p className="mt-1 text-xs leading-5" style={{ color: "#b09fc8" }}>{section.description}</p>
               </div>
               <div className="grid gap-3 lg:grid-cols-2">
                 {section.charts.map((chart) => (

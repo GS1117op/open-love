@@ -268,21 +268,24 @@ export function PostList() {
   }
 
   const btnClass =
-    "rounded-full border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition duration-150 hover:bg-slate-50 active:scale-[0.97] active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none";
+    "rounded-full border px-4 py-2.5 text-sm font-medium transition duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40";
 
   function PaginationControls() {
     const isFirst = currentPage === 1;
     const isLast = currentPage === totalPages;
     return (
-      <div className="flex flex-col items-stretch gap-3 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-500 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div
+        className="flex flex-col items-stretch gap-3 rounded-[1.5rem] border px-4 py-4 text-sm sm:flex-row sm:items-center sm:justify-between"
+        style={{ background: "rgba(42,17,69,0.6)", borderColor: "rgba(255,77,141,0.2)", color: "#b09fc8" }}
+      >
         <p>
           {filteredPostCount}件中 {(currentPage - 1) * PAGE_SIZE + 1}–
           {Math.min(currentPage * PAGE_SIZE, filteredPostCount)}件を表示
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => moveToPage(1)} disabled={isFirst} className={btnClass}>最初</button>
-          <button type="button" onClick={() => moveToPage(currentPage - 1)} disabled={isFirst} className={btnClass}>前へ</button>
-          <label className="flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">
+          <button type="button" onClick={() => moveToPage(1)} disabled={isFirst} className={btnClass} style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#e0d0f0" }}>最初</button>
+          <button type="button" onClick={() => moveToPage(currentPage - 1)} disabled={isFirst} className={btnClass} style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#e0d0f0" }}>前へ</button>
+          <label className="flex items-center gap-2 rounded-full px-3 py-1.5" style={{ background: "rgba(26,10,46,0.6)", color: "#b09fc8" }}>
             <span className="font-medium">ページ</span>
             <input
               type="number"
@@ -292,12 +295,13 @@ export function PostList() {
               value={pageInput}
               onChange={(e) => setPageInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handlePageSubmit(); }}
-              className="w-16 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm text-slate-700 outline-none transition focus:border-slate-400"
+              className="w-16 rounded-lg border px-2 py-1.5 text-center text-sm outline-none transition"
+              style={{ background: "rgba(42,17,69,0.85)", borderColor: "rgba(255,77,141,0.25)", color: "#f0e6ff" }}
             />
             <span>/ {totalPages}</span>
           </label>
-          <button type="button" onClick={() => moveToPage(currentPage + 1)} disabled={isLast} className={btnClass}>次へ</button>
-          <button type="button" onClick={() => moveToPage(totalPages)} disabled={isLast} className={btnClass}>最後</button>
+          <button type="button" onClick={() => moveToPage(currentPage + 1)} disabled={isLast} className={btnClass} style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#e0d0f0" }}>次へ</button>
+          <button type="button" onClick={() => moveToPage(totalPages)} disabled={isLast} className={btnClass} style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#e0d0f0" }}>最後</button>
         </div>
       </div>
     );
@@ -322,11 +326,11 @@ export function PostList() {
       />
 
       {loading ? (
-        <p className="text-sm text-slate-500">読み込み中...</p>
+        <p className="text-sm" style={{ color: "#b09fc8" }}>読み込み中...</p>
       ) : totalPostCount === 0 ? (
-        <p className="text-sm text-slate-500">投稿がありません</p>
+        <p className="text-sm" style={{ color: "#b09fc8" }}>投稿がありません</p>
       ) : posts.length === 0 ? (
-        <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500 shadow-sm">
+        <div className="rounded-[1.5rem] border border-dashed p-6 text-sm" style={{ borderColor: "rgba(255,77,141,0.25)", background: "rgba(42,17,69,0.5)", color: "#b09fc8" }}>
           条件に合う投稿がありません。フィルタを少しゆるめると見つかりやすいです。
         </div>
       ) : (

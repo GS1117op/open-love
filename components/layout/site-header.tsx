@@ -1,48 +1,67 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { BarChart3, LayoutGrid, PenSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur">
+    <header
+      className="sticky top-0 z-50 backdrop-blur-md"
+      style={{
+        borderBottom: "1px solid rgba(255, 77, 141, 0.2)",
+        background: "rgba(26, 10, 46, 0.92)",
+      }}
+    >
       <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4">
         <Link href="/" className="flex flex-col">
-          <span className="text-lg font-semibold tracking-tight text-slate-900">OpenLove</span>
-          <span className="text-xs text-slate-500">匿名で恋愛・結婚・セックスのリアルをのぞく</span>
+          <span
+            className="text-lg font-bold tracking-tight"
+            style={{
+              background: "linear-gradient(135deg, #ff4d8d, #9b2dd6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            OpenLove
+          </span>
+          <span style={{ color: "#b09fc8", fontSize: "0.72rem" }}>
+            匿名で恋愛・結婚・セックスのリアルをのぞく
+          </span>
         </Link>
 
         <nav className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:grid-cols-[repeat(3,auto)]">
-          <Button
-            asChild
-            variant="outline"
-            className="h-11 rounded-2xl border-slate-300 bg-white text-slate-800 shadow-sm hover:border-slate-400 hover:bg-slate-50"
+          <Link
+            href="/posts"
+            className="flex h-11 items-center justify-center gap-1.5 rounded-2xl px-4 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5"
+            style={{
+              background: "rgba(255, 77, 141, 0.08)",
+              border: "1px solid rgba(255, 77, 141, 0.25)",
+              color: "#f0e6ff",
+            }}
           >
-            <Link href="/posts">
-              <LayoutGrid className="size-4" />
-              投稿一覧
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-11 rounded-2xl border-emerald-300 bg-emerald-50 text-emerald-900 shadow-sm hover:border-emerald-400 hover:bg-emerald-100"
+            <LayoutGrid className="size-4" />
+            投稿一覧
+          </Link>
+          <Link
+            href="/data-graphs"
+            className="flex h-11 items-center justify-center gap-1.5 rounded-2xl px-4 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5"
+            style={{
+              background: "rgba(155, 45, 214, 0.12)",
+              border: "1px solid rgba(155, 45, 214, 0.3)",
+              color: "#f0e6ff",
+            }}
           >
-            <Link href="/data-graphs">
-              <BarChart3 className="size-4" />
-              データグラフ
-            </Link>
-          </Button>
-          <Button
-            asChild
-            className="h-11 rounded-2xl bg-slate-900 text-white shadow-sm hover:bg-slate-800"
+            <BarChart3 className="size-4" />
+            データグラフ
+          </Link>
+          <Link
+            href="/submit"
+            className="btn-gradient flex h-11 items-center justify-center gap-1.5 rounded-2xl px-4 text-sm font-medium"
           >
-            <Link href="/submit">
-              <PenSquare className="size-4" />
-              投稿する
-            </Link>
-          </Button>
+            <PenSquare className="size-4" />
+            投稿する
+          </Link>
         </nav>
       </div>
     </header>

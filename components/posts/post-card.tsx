@@ -84,13 +84,16 @@ function InfoGrid({ title, items, className }: { title: string; items: Array<{ l
   if (items.length === 0) return null;
 
   return (
-    <section className={`rounded-[1.25rem] border p-3 sm:p-4 ${className ?? "border-slate-200 bg-slate-50"}`}>
-      <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-slate-500">{title}</p>
+    <section
+      className={`rounded-[1.25rem] border p-3 sm:p-4 ${className ?? ""}`}
+      style={!className ? { background: "rgba(42, 17, 69, 0.6)", borderColor: "rgba(255, 77, 141, 0.15)" } : undefined}
+    >
+      <p className="mb-2 text-xs font-semibold tracking-[0.14em]" style={{ color: "#b09fc8" }}>{title}</p>
       <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:gap-3">
         {items.map((item) => (
           <div key={item.label}>
-            <p className="text-xs text-slate-500">{item.label}</p>
-            <p className="mt-0.5 text-sm text-slate-900">{item.value}</p>
+            <p className="text-xs" style={{ color: "#8070a0" }}>{item.label}</p>
+            <p className="mt-0.5 text-sm" style={{ color: "#f0e6ff" }}>{item.value}</p>
           </div>
         ))}
       </div>
@@ -114,16 +117,20 @@ function CompactProfileSummary({
   if (highlights.length === 0 && tags.length === 0) return null;
 
   return (
-    <section className={`rounded-[1.25rem] border border-slate-200 bg-slate-50 ${compact ? "p-2.5" : "p-3"}`}>
+    <section
+      className={`rounded-[1.25rem] border ${compact ? "p-2.5" : "p-3"}`}
+      style={{ background: "rgba(26, 10, 46, 0.6)", borderColor: "rgba(255, 77, 141, 0.15)" }}
+    >
       {highlights.length > 0 ? (
         <div className={`grid grid-cols-2 ${compact ? "gap-1.5" : "gap-2"}`}>
           {highlights.map((item) => (
             <div
               key={item.label}
-              className={`rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 ${compact ? "px-2.5 py-2" : "px-3 py-2"}`}
+              className={`rounded-2xl ${compact ? "px-2.5 py-2" : "px-3 py-2"}`}
+              style={{ background: "rgba(42, 17, 69, 0.8)", border: "1px solid rgba(255, 77, 141, 0.12)" }}
             >
-              <p className={`font-medium tracking-[0.08em] text-slate-500 ${compact ? "text-[9px]" : "text-[10px]"}`}>{item.label}</p>
-              <p className={`mt-0.5 font-semibold leading-4 text-slate-900 ${compact ? "text-xs" : "text-sm leading-5"}`}>{item.value}</p>
+              <p className={`font-medium tracking-[0.08em] ${compact ? "text-[9px]" : "text-[10px]"}`} style={{ color: "#8070a0" }}>{item.label}</p>
+              <p className={`mt-0.5 font-semibold leading-4 ${compact ? "text-xs" : "text-sm leading-5"}`} style={{ color: "#f0e6ff" }}>{item.value}</p>
             </div>
           ))}
         </div>
@@ -142,21 +149,21 @@ function CompactProfileSummary({
           {tags.map((item) => (
             <div
               key={item.label}
-              className={
-                cardStyle
-                  ? "rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100"
-                  : `inline-flex items-center rounded-full border border-slate-200 bg-white text-slate-700 ${compact ? "px-2.5 py-1 text-[11px] leading-4" : "gap-1 px-2.5 py-1 text-[11px] leading-4"}`
+              className={cardStyle ? "rounded-xl px-3 py-2" : `inline-flex items-center rounded-full ${compact ? "px-2.5 py-1 text-[11px] leading-4" : "gap-1 px-2.5 py-1 text-[11px] leading-4"}`}
+              style={cardStyle
+                ? { background: "rgba(42, 17, 69, 0.8)", border: "1px solid rgba(255, 77, 141, 0.12)" }
+                : { background: "rgba(42, 17, 69, 0.8)", border: "1px solid rgba(255, 77, 141, 0.15)", color: "#e0d0f0" }
               }
             >
               {cardStyle ? (
                 <>
-                  <p className="text-xs text-slate-500">{item.label}</p>
-                  <p className="mt-1 text-sm text-slate-900">{item.value}</p>
+                  <p className="text-xs" style={{ color: "#8070a0" }}>{item.label}</p>
+                  <p className="mt-1 text-sm" style={{ color: "#f0e6ff" }}>{item.value}</p>
                 </>
               ) : (
                 <>
-                  {valueOnly ? null : <span className="text-slate-500">{item.label}</span>}
-                  <span className="font-medium text-slate-900">{item.value}</span>
+                  {valueOnly ? null : <span style={{ color: "#8070a0" }}>{item.label}</span>}
+                  <span className="font-medium" style={{ color: "#f0e6ff" }}>{item.value}</span>
                 </>
               )}
             </div>
@@ -396,27 +403,34 @@ export function PostCard({
     },
   ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
+
   return (
     <>
-      <Card className="rounded-[2rem] border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-        <CardContent className="p-4 sm:p-5">
+      <div
+        className="rounded-[2rem] p-4 transition-all duration-200 hover:-translate-y-0.5 sm:p-5"
+        style={{ background: "rgba(42, 17, 69, 0.75)", border: "1px solid rgba(255, 77, 141, 0.2)", backdropFilter: "blur(8px)" }}
+      >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
               {avatarId ? (
                 <AvatarIllustration id={avatarId} size={44} />
               ) : (
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
+                <div
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold"
+                  style={{ background: "rgba(255, 77, 141, 0.15)", color: "#ff4d8d" }}
+                >
                   {displayName[0]}
                 </div>
               )}
                 <div className="min-w-0">
-                  <p className="truncate text-[15px] font-semibold text-slate-900">{displayName}</p>
+                  <p className="truncate text-[15px] font-semibold" style={{ color: "#f0e6ff" }}>{displayName}</p>
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {headerMetaItems.map((item) => (
                       <span
                         key={item.label}
-                        className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700"
+                        className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                        style={{ background: "rgba(255, 77, 141, 0.12)", border: "1px solid rgba(255, 77, 141, 0.2)", color: "#ff8cc8" }}
                       >
                         {item.value}
                       </span>
@@ -426,7 +440,7 @@ export function PostCard({
               </div>
             </div>
             {formattedDate ? (
-              <p className="shrink-0 pt-0.5 text-[11px] leading-4 text-slate-500">{formattedDate}</p>
+              <p className="shrink-0 pt-0.5 text-[11px] leading-4" style={{ color: "#8070a0" }}>{formattedDate}</p>
             ) : null}
           </div>
 
@@ -438,7 +452,7 @@ export function PostCard({
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-2xl bg-slate-900 px-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="btn-gradient flex h-10 w-full items-center justify-center gap-1.5 rounded-2xl px-3 text-sm font-semibold"
             >
               詳細を見る
               <ChevronRight className="size-4" />
@@ -446,32 +460,37 @@ export function PostCard({
             <button
               type="button"
               onClick={handleCopyShareUrl}
-              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-2xl bg-slate-100 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-2xl px-3 text-sm font-medium transition hover:-translate-y-0.5"
+              style={{ background: "rgba(255, 77, 141, 0.08)", border: "1px solid rgba(255, 77, 141, 0.2)", color: "#f0e6ff" }}
             >
               <Share2 className="size-4" />
               URLコピー
             </button>
           </div>
-        </CardContent>
-      </Card>
+      </div>
 
       {isExpanded ? (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 p-4" onClick={closeDetail}>
+        <div className="fixed inset-0 z-50 p-4" style={{ background: "rgba(10, 0, 20, 0.75)" }} onClick={closeDetail}>
           <div
-            className="mx-auto flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl"
+            className="mx-auto flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2rem]"
+            style={{ background: "#1e0d38", border: "1px solid rgba(255, 77, 141, 0.25)" }}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-4 py-3 sm:px-5">
+            <div
+              className="flex items-start justify-between gap-4 px-4 py-3 sm:px-5"
+              style={{ borderBottom: "1px solid rgba(255, 77, 141, 0.15)" }}
+            >
               <div>
-                <p className="text-sm font-medium text-slate-500">投稿詳細</p>
-                <h2 className="mt-1 text-base font-semibold text-slate-900 sm:text-lg">
+                <p className="text-sm font-medium" style={{ color: "#b09fc8" }}>投稿詳細</p>
+                <h2 className="mt-1 text-base font-semibold sm:text-lg" style={{ color: "#f0e6ff" }}>
                   {detail?.title || "投稿タイトル"}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={closeDetail}
-                className="rounded-full bg-slate-100 p-2 text-slate-600 transition hover:bg-slate-200"
+                className="rounded-full p-2 transition"
+                style={{ background: "rgba(255, 77, 141, 0.1)", color: "#b09fc8" }}
                 aria-label="閉じる"
               >
                 <X className="size-4" />
@@ -487,31 +506,37 @@ export function PostCard({
               />
 
               {detailLoading ? (
-                <div className="rounded-[1.25rem] border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                <div className="rounded-[1.25rem] border border-dashed p-4 text-sm" style={{ borderColor: "rgba(255, 77, 141, 0.2)", color: "#b09fc8" }}>
                   詳細を読み込み中です...
                 </div>
               ) : detailError ? (
-                <div className="rounded-[1.25rem] border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                <div className="rounded-[1.25rem] border p-4 text-sm" style={{ borderColor: "rgba(255, 77, 141, 0.3)", background: "rgba(255, 77, 141, 0.08)", color: "#ff8cc8" }}>
                   {detailError}
                 </div>
               ) : (
                 <>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <InfoGrid title="恋愛・性データ" items={romanceItems} className="border-rose-100 bg-rose-50/60" />
-                    <InfoGrid title="価値観" items={valueItems} className="border-amber-100 bg-amber-50/60" />
+                    <InfoGrid title="恋愛・性データ" items={romanceItems} />
+                    <InfoGrid title="価値観" items={valueItems} />
                   </div>
-                  <InfoGrid title="経験" items={experienceItems} className="border-emerald-100 bg-emerald-50/60" />
+                  <InfoGrid title="経験" items={experienceItems} />
                   {detail?.sex_satisfaction_note ? (
-                    <section className="rounded-[1.25rem] border border-rose-100 bg-rose-50/60 p-4">
-                      <p className="mb-3 text-xs font-semibold tracking-[0.14em] text-slate-500">点数の理由</p>
-                      <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                    <section
+                      className="rounded-[1.25rem] border p-4"
+                      style={{ background: "rgba(255, 77, 141, 0.07)", borderColor: "rgba(255, 77, 141, 0.2)" }}
+                    >
+                      <p className="mb-3 text-xs font-semibold tracking-[0.14em]" style={{ color: "#b09fc8" }}>点数の理由</p>
+                      <p className="whitespace-pre-wrap text-sm leading-7" style={{ color: "#e0d0f0" }}>
                         {detail.sex_satisfaction_note}
                       </p>
                     </section>
                   ) : null}
-                  <section className="rounded-[1.25rem] border border-slate-200 bg-slate-100/70 p-4">
-                    <p className="mb-3 text-xs font-semibold tracking-[0.14em] text-slate-500">本文</p>
-                    <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                  <section
+                    className="rounded-[1.25rem] border p-4"
+                    style={{ background: "rgba(42, 17, 69, 0.6)", borderColor: "rgba(255, 77, 141, 0.15)" }}
+                  >
+                    <p className="mb-3 text-xs font-semibold tracking-[0.14em]" style={{ color: "#b09fc8" }}>本文</p>
+                    <p className="whitespace-pre-wrap text-sm leading-7" style={{ color: "#e0d0f0" }}>
                       {detail?.content || "本文はありません。"}
                     </p>
                   </section>
@@ -521,7 +546,8 @@ export function PostCard({
               <button
                 type="button"
                 onClick={handleCopyShareUrl}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border px-4 text-sm font-medium transition hover:-translate-y-0.5"
+                style={{ borderColor: "rgba(255, 77, 141, 0.2)", background: "rgba(255, 77, 141, 0.08)", color: "#f0e6ff" }}
               >
                 <Share2 className="size-4" />
                 共有URLをコピー
